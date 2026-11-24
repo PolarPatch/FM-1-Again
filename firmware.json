@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "id": "again",
+  "name": "FM-1 Again",
+  "author": "PolarPatch",
+  "license": "GPL-3.0",
+  "tagline": "warm, chopped, pumping: the FM-1 made again",
+  "description": "Warm, emotional, rhythmic electronic music made again on the FM-1: chopped and pitched voices and everyday sounds, soft piano chords, a sidechain pump, garage and house grooves, build-ups and drops.",
+  "tags": ["groovebox", "sampler", "chords"],
+  "install": "https://polarpatch.github.io/FM-1-Again/install/",
+  "site": "https://polarpatch.github.io/FM-1-Again/",
+  "source": "https://github.com/PolarPatch/FM-1-Again",
+  "screenshot": "app/docs/img/screen-playing.png",
+  "hardware": {
+    "models": ["FM-1"],
+    "flash": ["856014", "B36014"],
+    "features": ["bluetooth-midi", "bluetooth-midi-devices", "usb-audio-in", "usb-audio-out", "velocity", "pressure", "screen-reader", "screen-mirror", "backup", "resources", "companion"]
+  },
+  "credits": "Built on fm1-base (Charles Vestal) and felucca-bsp, from Felucca by Leo Kuroshita (Hügelton Instruments); modules from Arctic Scream p0larpatch."
+}

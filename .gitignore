@@ -1,0 +1,5 @@
+app/build/
+.DS_Store
+midi_out.txt
+screenscaver/
+CLAUDE.md

@@ -75,6 +75,30 @@ short piece by itself; hold keys and play chopped voices over chords; a button l
 - Screensaver clips 01 and 02 (58 KB) when wanted: app/tools/again_saver.py, 66 KB room left.
 - 1.0.x: small, frequent releases (tag vX.Y.Z on main; then app/tools/make_again_site.py X.Y.Z --publish).
 
+## Ports: VIBE FM and the SMK-37 (planned 2026-11-24)
+VIBE FM VST, VIBE FM (the hardware) and the Playground are one target: one `.wasm` built with the VIBE FM SDK
+(github.com/Vibe-FM-SDK/vibe-fm-sdk); VIBE FM Lab is the hub's porting programme and the VIBE Box Challenge
+(entries close 15 Dec 2026, up to three per person; Arctic Scream VIBE is one). The SMK-37 Pro (the user has one)
+is a second board of fm1-base.
+
+0. **The engine apart from the FM-1's UI** (first, for both): app.c holds the engine (render, notes, clock, groove,
+   params, CHOP's sample) and the FM-1's screen and controls together. Split into an engine with a small API
+   (init, render, note on/off, transport, param get/set, sample load) and the FM-1 front end; the FM-1 build and its
+   tests stay byte-for-byte the same in sound.
+1. **FM-1 Again VIBE** (deadline 15 Dec): its own repo (PolarPatch/FM-1-Again-VIBE, as arctic-scream-vibe: the SDK's
+   firmware folder, the engine synced from here, the SDK cloned at a pinned commit, not in git). What the FM-1 cannot:
+   audio in recorded straight into CHOP (sing, chop, play), long samples (minutes, not 8 s), the 16 RGB pads as
+   CHOP's slices and PERFORM's tricks, the 480 x 320 screen in the poster's black and white, the DAW's tempo and
+   automation, the stage (1280 x 720) for the screensaver's film. Read first: sdk/AGENTS.md, sdk/FROM-FM1.md, the
+   OberVave source; `vibe-check` must pass; the user submits it (their account, the challenge box ticked).
+2. **FM-1 Again SMK-37 Pro**: fm1-base's board option (`board = "smk37"`, `model = pro|elite|mke`) lives on its branch
+   smk37-inhouse (2026-11-06), not in main yet: ask Charles Vestal when it lands, or build from the branch. Work: the
+   flash map again (the SMK's windows differ: PLAT_OWNER at 0xAF000 inside XDATA1, the calibration at 0xC1000 never
+   written), so CHOP's sample and the film need new places; the controls (37 keys, 16 pads: PERFORM and slices,
+   4 faders: KEYS / VOICE / DRUMS / SPACE levels, wheels: pitch and FILTER, 8 encoders as the FM-1's); packages per
+   model; an `smk37` block in fmhub.json. Test on the user's SMK-37 Pro after a full flash backup.
+- One version line for all of them (FM-1 Again 1.x everywhere), as Arctic Scream does.
+
 ## Open questions for the user
 - Which sounds to record for the first factory samples?
 - Repo name (`fm1.toml` assumes PolarPatch/FM-1-Again)?

@@ -1,12 +1,12 @@
 {
-  "what": "Warm, emotional, rhythmic electronic music made again on the FM-1. Press PLAY and a garage groove starts with chords pumping under the kick; play soft electric piano, sung syllables or your own chopped recording on the keys, hold a black key for a stutter or a tape stop, press ARP and let the drop fall. Black and white, set like a tour poster.",
+  "what": "Warm, rhythmic electronic music on the FM-1. Eight garage and house grooves with chords pumping under the kick; electric piano, sung syllables or your own chopped sample on the keys; pads for stutters and tape stops; ARP builds and drops. A black and white poster screen.",
   "author": "PolarPatch",
   "kinds": [
-    "groovebox"
+    "groove"
   ],
   "play": "https://polarpatch.github.io/FM-1-Again/",
   "editor": "https://polarpatch.github.io/FM-1-Again/editor/",
   "cheat": "https://polarpatch.github.io/FM-1-Again/cheatsheet.html",
-  "image": "app/docs/img/screen-playing.png",
+  "image": "docs/card.png",
   "color": "#FFFFFF"
 }

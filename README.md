@@ -11,7 +11,7 @@ fall. A sister to [Arctic Scream p0larpatch](https://github.com/PolarPatch/Arcti
 [cheat sheet](https://polarpatch.github.io/FM-1-Again/cheatsheet.html) ·
 [manual](app/docs/MANUAL.md) · [releases](https://github.com/PolarPatch/FM-1-Again/releases)
 
-![FM-1 Again playing: the bar count in big type, the tempo, the waveform of the last 16 bars, the four knobs' values](app/docs/img/screen-playing.png)
+![FM-1 Again's screens: the name, the screensaver, the drop, a build ("Drop in 4"), a pad held (stutter), CHOP with a slice reversed, KEYS, playing, TAPE](app/docs/img/screens.png)
 
 ## What it does
 
@@ -37,6 +37,13 @@ also put M-VAVE's own firmware back. Or from a terminal, with the package from t
 
 Unofficial firmware, not made or endorsed by M-VAVE: install at your own risk. Stuck? The Rescue page on the
 [FM-1 Firmware Hub](https://thefirmwarehub.com/) brings it back.
+
+**Back up first: other firmwares' projects and samples.** FM-1 Again cannot read what another firmware saved, and it
+writes over these parts of the FM-1's flash: 0x97000–0xDBFFF (the screensaver's film, written by the installer), the
+store's pairs at 0xDC000 and 0xDE000, 0xE5000–0xFBFFF (CHOP's sample) and Felucca's settings sector pair at 0xFC000
+(FM-1 Again's settings). Samples, kits or projects another firmware kept there are gone after you install it, and a
+firmware you install afterwards will not find FM-1 Again's settings or sample. Back up with that firmware's own tool
+before you install.
 
 ## Your own sample
 

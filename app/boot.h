@@ -1,40 +1,46 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later
  * Copyright (C) 2026 PolarPatch */
-/* The boot screen, as Arctic Scream p0larpatch's (its ui.c ui_boot: the same storm, tears, light and timing): FM-1 and
- * AGAIN in the pixfont at four times its size come out of the dark in a storm of torn pixel rows that settles into
- * the banner's glitch (some rows of each word torn and split into ice, plasma and violet), with a short burst now and
- * then; p0larpatch fades in under it in ice and the four colour lines draw out from their middles. BOOT_MS long, or
- * until the first touch. The pixfont: Press Start 2P (SIL OFL 1.1), app/gen/again_pixfont.h.
+/* The boot screen, after Arctic Scream p0larpatch's (its ui.c ui_boot: the storm, the light, the timing) and its site's
+ * glitching titles: FM-1 and AGAIN in the pixfont at four times its size come out of the dark in a storm of torn rows
+ * that settles; then the letters stand whole and white, and ghosts of them in ice, plasma and violet are torn into view
+ * beside them in thin bands, a few at a time at random moments (the glitch around the letters, never in them). Under
+ * the title the four colour lines draw out from their middles, and p0larpatch fades in under them in ice. BOOT_MS
+ * long, or until the first touch. The pixfont: Press Start 2P (SIL OFL 1.1), app/gen/again_pixfont.h.
  * Part of app.c (the unity build). Main loop only. */
 #include "gen/again_pixfont.h"
 
 #define BOOT_MS 5600u
-#define BOOT_FRAME_MS 55u                       /* a frame of the storm: ~18 a second */
-#define BT_Y1 66                                /* FM-1's top, */
-#define BT_Y2 110                               /* AGAIN's, */
-#define BT_PY 162                               /* p0larpatch's line, */
-#define BT_LY 196                               /* the lines' */
-#define BT_TY (BT_Y1 - 4)                       /* the band the title is drawn in */
-#define BT_TH (BT_Y2 + 36 - BT_TY)
+#define BOOT_FRAME_MS 55u                       /* a frame: ~18 a second */
+#define BT_Y1 50                                /* FM-1's top, */
+#define BT_Y2 92                                /* AGAIN's, */
+#define BT_LY 140                               /* the lines', */
+#define BT_PY 158                               /* p0larpatch's */
+#define BT_TY (BT_Y1 - 2)                       /* the band the title is drawn in */
+#define BT_TH (BT_Y2 + 34 - BT_TY)
 #define BT_ICE RGB(0x22, 0xd3, 0xee)
 #define BT_PLASMA RGB(0xff, 0x1a, 0x8c)
 #define BT_VIOLET RGB(0xa7, 0x8b, 0xfa)
 #define BT_GREEN RGB(0x3f, 0xb9, 0x50)
-typedef struct { int8_t ya, yb, dx; uint8_t k; } bt_slice;   /* a word's rows ya .. yb (px), shifted dx, colour k */
-static const uint16_t BT_K[] = {RGB(0xea, 0xf6, 0xfa), RGB(0xff, 0xff, 0xff), BT_ICE, BT_PLASMA, BT_VIOLET,
-                                RGB(0xff, 0xe4, 0xf3), RGB(0xe2, 0xf7, 0xff)};   /* white, bright, ice, plasma, violet,
-                                                                                * rose, frost */
+static const uint16_t BT_K[] = {RGB(0xea, 0xf6, 0xfa), BT_ICE, BT_PLASMA, BT_VIOLET};   /* white, then the ghosts */
 static const uint16_t BT_LINES[4] = {BT_ICE, BT_GREEN, BT_VIOLET, BT_PLASMA};
-static const bt_slice BT_W1[] = {{16, 20, -3, 2}, {16, 20, 4, 3}, {16, 20, 2, 1}, {20, 22, -4, 4}, {20, 24, 1, 6}};
-static const bt_slice BT_W2[] = {{0, 4, -2, 3}, {0, 4, 4, 2}, {0, 4, 0, 1}, {6, 8, 4, 4}, {4, 8, -3, 2}, {4, 8, -2, 5}};
 static const char *const BT_WORD[2] = {"FM-1", "AGAIN"};
+/* The three ghosts, as PolarPatch BlueWatch's CONFIG title: each a copy of the whole title in its colour, shifted a
+ * little sideways (so it shows beside the letters, never in them), cut into view as one band of the title for a few
+ * hundredths of its own cycle, the three cycles apart so the tears never land together. A band: from, to (% of the
+ * cycle), top, bottom (% of the title's height). */
+#define BT_NG 3
+typedef struct { uint8_t from, to, top, bot; } bt_band;
+static const struct { uint16_t ms; int8_t dx; uint8_t k, n; bt_band b[3]; } BT_GHOST[BT_NG] = {
+    {2600, -7, 1, 3, {{15, 21, 8, 26}, {53, 59, 46, 68}, {86, 92, 70, 88}}},   /* ice */
+    {3100, 7, 2, 3, {{23, 29, 32, 48}, {62, 68, 76, 92}, {94, 99, 12, 32}}},   /* plasma */
+    {4300, 4, 3, 2, {{41, 47, 58, 74}, {79, 85, 20, 38}, {0, 0, 0, 0}}},       /* violet */
+};
 static struct {
     uint8_t on;
     uint32_t t0, at, rnd, k, pk, ln;            /* since; the last frame; the dice; the title's light (0 .. 64);
                                                  * p0larpatch's (0 .. 8); the lines' length */
-    int8_t dx[2][16];                           /* this frame's tears: each word's 2 px bands, their shift */
-    uint8_t gk[2][16];                          /* (and their ghosts' colour) */
-    int torn;
+    int8_t tear[2][16];                         /* the storm: each word's 2 px bands, shifted */
+    struct { int16_t top, bot; int8_t dx; } g[BT_NG];   /* each ghost now: title rows top .. bot (none: top >= bot) */
 } bt;
 
 static uint32_t bt_rnd(uint32_t n)
@@ -49,7 +55,7 @@ static uint16_t bt_mix(uint16_t a, uint16_t b, uint32_t t, uint32_t n)   /* RGB5
     return (uint16_t)(r << 11 | g << 5 | bl);
 }
 static uint16_t bt_c(uint32_t k) { return bt_mix(C_BLACK, BT_K[k], bt.k, 64u); }
-/* a word's rows ya .. yb at canvas row y, shifted dx */
+/* a word's rows ya .. yb (px of its 32) at canvas row y, shifted dx */
 static void bt_rows(int32_t y, const char *s, int32_t ya, int32_t yb, int32_t dx, uint16_t c)
 {
     int32_t n = 0, x, r, b, b0, t, u;
@@ -70,28 +76,21 @@ static void bt_rows(int32_t y, const char *s, int32_t ya, int32_t yb, int32_t dx
         }
     }
 }
-static void bt_word(uint32_t w, int32_t y, const bt_slice *sl, uint32_t n)
-{
-    uint32_t i, b, keep = 0;
-    int32_t dx;
-    for (i = 0; i < n; i++)
-        keep |= (0xFFFFu >> (16 - (sl[i].yb - sl[i].ya + 1) / 2)) << sl[i].ya / 2;
-    for (b = 0; b < 16u; b++) {                 /* the word, but for the banner's torn rows: its bands, torn or not */
-        if (keep >> b & 1u)
-            continue;
-        dx = bt.dx[w][b];
-        if (dx)
-            bt_rows(y, BT_WORD[w], (int32_t)b * 2, (int32_t)b * 2 + 2, dx + (dx > 0 ? 3 : -3), bt_c(bt.gk[w][b]));
-        bt_rows(y, BT_WORD[w], (int32_t)b * 2, (int32_t)b * 2 + 2, dx, bt_c(dx ? 1u : 0u));
-    }
-    for (i = 0; i < n; i++)                     /* the banner's torn rows, behind first */
-        bt_rows(y, BT_WORD[w], sl[i].ya, sl[i].yb, sl[i].dx + bt.dx[w][sl[i].ya / 2], bt_c(sl[i].k));
-}
 static void bt_draw_title(void)
 {
+    uint32_t w, b, i;
+    int32_t y[2] = {BT_Y1 - BT_TY, BT_Y2 - BT_TY};
     cv_begin(240, BT_TH, C_BLACK);
-    bt_word(0, BT_Y1 - BT_TY, BT_W1, sizeof BT_W1 / sizeof BT_W1[0]);
-    bt_word(1, BT_Y2 - BT_TY, BT_W2, sizeof BT_W2 / sizeof BT_W2[0]);
+    for (i = 0; i < BT_NG; i++)                 /* the ghosts behind: only their edges show beside the letters */
+        for (w = 0; w < 2u && bt.g[i].top < bt.g[i].bot; w++) {
+            int32_t a = bt.g[i].top - (y[w] - y[0]), z = bt.g[i].bot - (y[w] - y[0]);   /* (in the word's rows) */
+            a = a < 0 ? 0 : a, z = z > 32 ? 32 : z;
+            if (a < z)
+                bt_rows(y[w], BT_WORD[w], a, z, bt.g[i].dx, bt_c(BT_GHOST[i].k));
+        }
+    for (w = 0; w < 2u; w++)                    /* the letters, whole but for the storm's tears */
+        for (b = 0; b < 16u; b++)
+            bt_rows(y[w], BT_WORD[w], (int32_t)b * 2, (int32_t)b * 2 + 2, bt.tear[w][b], bt_c(0));
     cv_blit(0, BT_TY);
 }
 static void bt_draw_name(void)                  /* p0larpatch: the pixfont at twice its size */
@@ -115,36 +114,43 @@ static void bt_draw_lines(void)                 /* four lines, 44 px, growing fr
         cv_rect(23 + (int32_t)t * 50 + 22 - (int32_t)bt.ln / 2, 0, (int32_t)bt.ln, 2, BT_LINES[t]);
     cv_blit(0, BT_LY);
 }
-/* the boot screen at e ms: the light, the storm's tears (Arctic Scream's bt_state) */
-static void bt_state(uint32_t e)
+/* the boot screen at e ms: the storm dying down, the ghosts on their cycles; 1: the title changed */
+static int bt_state(uint32_t e)
 {
-    static const uint16_t BURST[] = {2750, 3900, 4650, 5200};   /* (short bursts once it settled, 140 ms each) */
-    uint32_t g = 0, i, n, w, b, m;
-    int32_t dx;
+    uint32_t g = 0, i, j, w, b, k0 = bt.k;
+    int32_t th = BT_Y2 + 32 - BT_Y1;            /* the title's height: FM-1, the gap, AGAIN */
+    int changed = 0;
     if (e < 1700u)
-        g = e < 300u ? 64u : 64u - (e - 300u) * 64u / 1400u;   /* the storm, dying down */
-    for (i = 0; i < sizeof BURST / sizeof BURST[0]; i++)
-        if (e >= BURST[i] && e < BURST[i] + 140u)
-            g = 36u;
+        g = e < 300u ? 64u : 64u - (e - 300u) * 64u / 1400u;   /* the storm */
     bt.k = e < 250u ? 0u : e < 1100u ? (e - 250u) * 64u / 850u : 64u;
     if (g && bt_rnd(80) < g)
         bt.k = bt.k * (1u + bt_rnd(3)) / 4u;    /* (it flickers in the storm) */
-    bt.torn = 0;
-    for (w = 0; w < 2u; w++)
-        for (b = 0; b < 16u; b++)
-            bt.torn |= bt.dx[w][b], bt.dx[w][b] = 0;
-    n = g ? 1u + g * 8u / 64u : bt_rnd(14) == 0;   /* (settled: a band jumps a pixel or two now and then) */
-    m = g ? 3u + g * 22u / 64u : 2u;
-    for (i = 0; i < n; i++) {
-        w = bt_rnd(2), b = bt_rnd(16), dx = (int32_t)bt_rnd(2u * m + 1u) - (int32_t)m;
-        bt.dx[w][b] = (int8_t)dx, bt.gk[w][b] = (uint8_t)(2u + bt_rnd(3));
-        if (b < 15u && bt_rnd(2))
-            bt.dx[w][b + 1] = (int8_t)dx, bt.gk[w][b + 1] = bt.gk[w][b];
-        bt.torn = 1;
+    changed |= bt.k != k0;
+    for (w = 0; w < 2u; w++)                    /* the storm's tears in the letters: gone once it settled */
+        for (b = 0; b < 16u; b++) {
+            int8_t t = 0;
+            if (g && bt_rnd(64) < g / 3u)
+                t = (int8_t)((int32_t)bt_rnd(2u * (2u + g / 4u) + 1u) - (int32_t)(2u + g / 4u));
+            changed |= t != bt.tear[w][b];
+            bt.tear[w][b] = t;
+        }
+    for (i = 0; i < BT_NG; i++) {               /* the ghosts: where each one's cycle is */
+        uint32_t pc = (e % BT_GHOST[i].ms) * 100u / BT_GHOST[i].ms;
+        int16_t top = 0, bot = 0;
+        int8_t dx = (int8_t)(BT_GHOST[i].dx * (g ? 3 : 1));   /* (thrown further in the storm) */
+        for (j = 0; j < BT_GHOST[i].n; j++)
+            if (pc >= BT_GHOST[i].b[j].from && pc < BT_GHOST[i].b[j].to)
+                top = (int16_t)(th * BT_GHOST[i].b[j].top / 100), bot = (int16_t)(th * BT_GHOST[i].b[j].bot / 100);
+        if (g && bt_rnd(3) == 0) {              /* (the storm tears them in at random too) */
+            top = (int16_t)bt_rnd((uint32_t)th - 6u);
+            bot = (int16_t)(top + 4 + (int16_t)bt_rnd(10));
+        }
+        changed |= top != bt.g[i].top || bot != bt.g[i].bot || dx != bt.g[i].dx;
+        bt.g[i].top = top, bt.g[i].bot = bot, bt.g[i].dx = dx;
     }
-    bt.torn |= g != 0;
     bt.pk = e < 1300u ? 0u : e < 2100u ? (e - 1300u) * 8u / 800u : 8u;
-    bt.ln = e < 2000u ? 0u : e < 2800u ? (e - 2000u) * 44u / 800u : 44u;
+    bt.ln = e < 1000u ? 0u : e < 1800u ? (e - 1000u) * 44u / 800u : 44u;
+    return changed;
 }
 static void boot_start(uint32_t now)
 {
@@ -165,8 +171,7 @@ static int boot_frame(uint32_t now)
     if (now - bt.at < BOOT_FRAME_MS)
         return 1;
     bt.at = now;
-    bt_state(now - bt.t0);
-    if (bt.torn || bt.k != k)
+    if (bt_state(now - bt.t0) || bt.k != k)
         bt_draw_title();
     if (bt.pk != pk)
         bt_draw_name();

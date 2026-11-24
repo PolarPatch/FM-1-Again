@@ -8,5 +8,6 @@
   "editor": "https://polarpatch.github.io/FM-1-Again/editor/",
   "cheat": "https://polarpatch.github.io/FM-1-Again/cheatsheet.html",
   "image": "docs/card.png",
-  "color": "#FFFFFF"
+  "color": "#FFFFFF",
+  "sounds": "own: CHOP's factory phrase is the firmware's own VOX voice, recorded in its simulator; everything else is synthesised"
 }

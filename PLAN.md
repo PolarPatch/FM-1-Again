@@ -98,6 +98,12 @@ is a second board of fm1-base.
    4 faders: KEYS / VOICE / DRUMS / SPACE levels, wheels: pitch and FILTER, 8 encoders as the FM-1's); packages per
    model; an `smk37` block in fmhub.json. Test on the user's SMK-37 Pro after a full flash backup.
 - One version line for all of them (FM-1 Again 1.x everywhere), as Arctic Scream does.
+- **From Dinghy 0.6** (zvenson/dinghy, GPL-3.0, 2026-11-24; ideas and, with credit, code): FM-1 Again ignores MIDI
+  clock today (app.c drops 0xF8). Wanted before the ports, since a DAW and the VIBE lead the tempo there:
+  **MIDI clock in** (taken where it arrives, the tempo measured in rendered frames, held by a PI loop as kit_clock.h /
+  OberVave 3.5.4; SYNC AUTO or INTERNAL; START / CONTINUE / STOP) and **clock out**; the **MIDI basics** of
+  kit_midi.h (channel, pitch bend, mod wheel, sustain, CC 7, all notes off); **VIBE LINK** (kit_link.h): the FM-1 as
+  the VIBE FM's controller, for FM-1 Again VIBE played from the pink FM-1.
 
 ## Open questions for the user
 - Which sounds to record for the first factory samples?

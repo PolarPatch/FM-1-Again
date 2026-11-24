@@ -82,7 +82,8 @@ short piece by itself; hold keys and play chopped voices over chords; a button l
   or LOADed from the card / USB into CHOP; locked to the DAW's tempo, PLAY and beat; the Editor's cards; the boot
   screen, the screensaver, the stage; SHIFT + pad reverses a slice. A draft release v1.0.0 for the user to look at.
 - SMK-37: fm1-base main still without the board (its smk37-inhouse branch, 2026-11-06); nothing built.
-- Not flashed: the pink FM-1 still runs 1.0 (flashing needs the user's go).
+- 2026-11-25 morning: the dev build flashed on the pink FM-1; a 128 BPM MIDI clock from the Mac: START started the
+  groove and HOME showed 128 BPM (the user saw it). Ready for 1.1 (the boot screen, MIDI clock, the MIDI page).
 
 ## Ports: VIBE FM and the SMK-37 (planned 2026-11-24)
 VIBE FM VST, VIBE FM (the hardware) and the Playground are one target: one `.wasm` built with the VIBE FM SDK

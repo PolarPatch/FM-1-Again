@@ -15,14 +15,13 @@ repository's; the ports take it from here.
 
 ## The order
 
-1. **The boot screen** (done: `app/boot.h`, Arctic Scream's storm with FM-1 / AGAIN, p0larpatch and the four lines).
-2. **The engine apart from the FM-1's UI**: app.c holds the engine (render, notes, clock, groove, params, CHOP's
-   sample) and the FM-1's screen and controls together. Split into an engine with a small API (init, render, note
-   on/off, transport, param get/set, sample load) and the FM-1 front end. The FM-1 build and its tests stay the same.
-3. **MIDI clock in and out and the MIDI basics**, after Dinghy 0.6 (zvenson/dinghy, GPL-3.0: `kit_clock.h`'s PI loop
-   after OberVave 3.5.4, `kit_midi.h`; credited). FM-1 Again drops MIDI clock today (app.c, 0xF8), and the VIBE and a
-   DAW lead the tempo.
-4. **FM-1 Again VIBE** (before 15 Dec): sound in straight into CHOP, long samples, the 16 RGB pads as slices and
+1. Done: **the boot screen** (`app/boot.h`: FM-1 / AGAIN in Arctic Scream's storm, the glitch of BlueWatch's CONFIG
+   title around the letters, the four lines, p0larpatch).
+2. Done: **the engine apart from the FM-1's UI** (`app/core.c`; the host's audio bit for bit the same) and the film's
+   decoder (`app/film.h`): both shared with FM-1 Again VIBE through its `tools/sync_engine.sh`.
+3. Done: **MIDI clock in and out** after Dinghy 0.6 (SYNC AUTO / INTERNAL, CLOCK OUT, the MIDI page; `tests/clock.txt`).
+   Still to do from Dinghy's kit: the MIDI basics (channel, pitch bend, mod wheel, sustain, CC 7, all notes off).
+4. **FM-1 Again VIBE** (before 15 Dec; most of it done 2026-11-25, see its DEVELOPER.md): sound in straight into CHOP, long samples, the 16 RGB pads as slices and
    tricks, the 480 x 320 screen in black and white, the DAW's tempo and automation, the stage for the screensaver's
    film, VIBE LINK (Dinghy's `kit_link.h`: the pink FM-1 as its controller). Read first: the SDK's `AGENTS.md`,
    `FROM-FM1.md`, the OberVave source; `vibe-check` must pass. The user submits it (their account, the challenge box).

@@ -75,6 +75,15 @@ short piece by itself; hold keys and play chopped voices over chords; a button l
 - Screensaver clips 01 and 02 (58 KB) when wanted: app/tools/again_saver.py, 66 KB room left.
 - 1.0.x: small, frequent releases (tag vX.Y.Z on main; then app/tools/make_again_site.py X.Y.Z --publish).
 
+## Night of 2026-11-24/25 (the user asleep; full permissions for VIBE and SMK-37 development)
+- FM-1 Again: the boot screen (pushed, not flashed); app/core.c split (audio identical); MIDI clock in/out and the
+  MIDI page (host-tested: a 119 BPM master followed, its beat held; not on the device yet); film.h shared.
+- FM-1 Again VIBE (PolarPatch/FM-1-Again-VIBE): the port, vibe-check PASSED; REC from IN 1 into CHOP; a WAV dropped
+  or LOADed from the card / USB into CHOP; locked to the DAW's tempo, PLAY and beat; the Editor's cards; the boot
+  screen, the screensaver, the stage; SHIFT + pad reverses a slice. A draft release v1.0.0 for the user to look at.
+- SMK-37: fm1-base main still without the board (its smk37-inhouse branch, 2026-11-06); nothing built.
+- Not flashed: the pink FM-1 still runs 1.0 (flashing needs the user's go).
+
 ## Ports: VIBE FM and the SMK-37 (planned 2026-11-24)
 VIBE FM VST, VIBE FM (the hardware) and the Playground are one target: one `.wasm` built with the VIBE FM SDK
 (github.com/Vibe-FM-SDK/vibe-fm-sdk); VIBE FM Lab is the hub's porting programme and the VIBE Box Challenge

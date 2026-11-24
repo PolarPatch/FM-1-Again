@@ -57,14 +57,23 @@ short piece by itself; hold keys and play chopped voices over chords; a button l
 - CHOP: record into the sample; REVERSE per slice.
 - The site and landing page (still the template's); a public repo only after asking.
 
-## 1.0 (2026-11-24)
-- CHOP REVERSE per slice; settings record AGN2 kept across releases; APP_PARAMS (every value live, the editor).
-- The site (app/site, app/tools/make_again_site.py): the front page with the emulator in a frame and six demos, the
-  cheat sheet, the editor (parameters live; CHOP sample: record or open, onsets / even / by hand, preview, AGC1 coder
-  identical to again_chop.py's, sent as the companion's file), over fm1-base's installer, manual, emu, backup.
-- The repo PolarPatch/FM-1-Again (the user's go, 2026-11-24): main, gh-pages, tag v1.0 built by the hub's builder
-  (.github/workflows/release.yml, zvenson/fm1-build@v1: the tag the hub recognises, kept as Arctic Scream has it).
-- Not yet tried on the FM-1: this build's CHOP upload into XDATA1, the parameters, backup (flash needs the user's go).
+## 1.0 (2026-11-24): released, on the hub's desk
+- Released: github.com/PolarPatch/FM-1-Again, tag v1.0 (built and attested by zvenson/fm1-build@v1), site on gh-pages
+  (polarpatch.github.io/FM-1-Again: front page with the emulator and six demos, cheat sheet, editor, installer).
+- Submitted to thefirmwarehub.com by the user (2026-11-24). fmhub.json, docs/card.png, app/docs/img/screens.png
+  (app/tools/make_shots.py from app/docs/shots.txt).
+- Tested on the pink FM-1 with the release file: V15 -> 1.0; 1.0 -> Arctic Scream 2.1.6 -> 1.0; CHOP upload into XDATA1
+  read back identical; parameters set live; FM-1 Live's Screen room mirrors it. Not yet: an interrupted update,
+  backup/restore on the device, the editor and the demos in a real Chrome.
+- Both flash chips accepted (fm1-base's FM1B_FLASH_JEDEC_OK; the loader checks none).
+- Known: base/tools/fm1_install.py from V15 loses the FM-1 when the port renames (FM-1 -> Felucca) before writing the
+  resources; the package's loader writes them anyway (fm1_resources.py by hand fixed it). Worth an issue on fm1-base.
+- The public history starts at one squashed commit (no CLAUDE.md); the old history is the local branch local-history.
+
+## Next
+- Demo samples from the user (tomorrow); CHOP's factory phrase may be replaced by one of them.
+- Screensaver clips 01 and 02 (58 KB) when wanted: app/tools/again_saver.py, 66 KB room left.
+- 1.0.x: small, frequent releases (tag vX.Y.Z on main; then app/tools/make_again_site.py X.Y.Z --publish).
 
 ## Open questions for the user
 - Which sounds to record for the first factory samples?

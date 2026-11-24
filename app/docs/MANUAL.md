@@ -67,7 +67,7 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 | OCT- / OCT+ | The keys' octave, -2 to +2 |
 | PLAY | Starts and stops the groove |
 | ARP | BUILD, then DROP: the build starts at the next bar and lasts BUILD bars (SETUP). ARP again during the build: the drop at the next bar. When stopped, it starts the groove too |
-| HOME, SEQ, EDIT, ENV, LFO, FX, GLO | The pages (below). The same button again: its next page (SEQ: GROOVE, RISE, BUILD; ENV: VOX, CHOP; FX: SPACE, ECHO; GLO: SETUP, TAPE, MIX) |
+| HOME, SEQ, EDIT, ENV, LFO, FX, GLO | The pages (below). The same button again: its next page (SEQ: GROOVE, RISE, BUILD; ENV: VOX, CHOP; FX: SPACE, ECHO; GLO: SETUP, TAPE, MIX, MIDI) |
 | SELECT | Steps through the pages |
 | ALGORITHM | What the keys play |
 | PRESET | The page's main choice (shown in the header's second line) |
@@ -94,6 +94,7 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 | SETUP (GLO) | SAVER: the screensaver ON or OFF | KEY | BLACK: PADS or NOTES | KEYS level | VOICE level (VOX and CHOP) |
 | TAPE (GLO again) | the tape: CLEAN, WARM, CASSETTE, WORN, MEMORY | WOW | WARMTH (saturation) | DULL | HISS |
 | MIX (GLO a third time) | PLAY | KICK | HATS | CLAP | RISE |
+| MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | TEMPO | SWING |
 
 **The grooves:** HOUSE, 2-STEP, GARAGE 4X4, SHUFFLE, HALFTIME, BROKEN, MINIMAL, KICK ONLY. Each brings its own swing,
 and some of their hits come only half the time or every other bar, so a groove never repeats quite the same. VARY
@@ -190,6 +191,11 @@ stay through updates: a new version gives what it adds its default and keeps the
 
 The keys go out over USB-MIDI and Bluetooth MIDI on channel 1, and notes coming in on any channel play whatever the
 keys play. Over USB the FM-1 is also an audio interface: a computer can record it and play through it.
+
+**MIDI clock.** With SYNC on AUTO (the default), a MIDI clock that comes in (from a computer over USB, the TRS jack or
+Bluetooth) leads: FM-1 Again plays at its tempo, held on its beat, and START, CONTINUE and STOP start and stop the
+groove. When the clock stops coming, your own TEMPO is back. INTERNAL ignores it. CLOCK OUT sends FM-1 Again's own
+tempo as a clock to the computer over USB, with START and STOP, while no clock leads.
 
 ## 9. The screen reader
 

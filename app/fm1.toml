@@ -10,6 +10,7 @@ ble = true                     # Bluetooth MIDI (--no-ble builds without it)
 ble_central = true             # and the FM-1 connects to Bluetooth MIDI devices too
 companion = true               # the settings and CHOP's sample as files over USB (tools/again_chop.py --send)
 ble_stack = "own"              # fm1-base's own stack (Optimist, MPL-2.0): nothing of JieLi's linked (GPL modules may join)
+midi_stamp = true             # MIDI in stamped where it lands: a MIDI clock followed to the frame
 mirror = true                  # the screen and panel mirrored over USB (FM-1 Live's Screen room, fm1-base's web mirror)
 backup = true                  # the settings backed up and restored over USB (and the resource region's transfer)
 resources = "media/again_saver.bin"   # the screensaver's film (tools/again_saver.py; the USB002 creative drop, not GPL)

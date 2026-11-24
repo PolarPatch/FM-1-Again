@@ -16,12 +16,100 @@
 #include "saver.h"
 #include "boot.h"
 
+/* MIDI clock in (SYNC AUTO: a clock that comes in leads), after Dinghy 0.6's kit_clock.h (zvenson, GPL-3.0) and
+ * OberVave's: each tick taken where it landed (plat_midi_in_t24, fm1.toml midi_stamp), the tempo measured over a
+ * quarter (24 ticks) in the FM-1's 24 MHz clock and smoothed, our sixteenths held on the master's by a proportional
+ * pull once a sixteenth (6 ticks), counted from where the master was when the tick came (its age at this block's
+ * start). START: the first bar's first step; CONTINUE: on; STOP: off. CLOCK OUT: 24 ticks a quarter at our own tempo,
+ * START and STOP, to USB (plat_midi_send from the render: within the 2 kHz poll). Audio interrupt, but sy_check. */
+#define SY_T24 24000000.0f
+#ifdef PLAT_HOST                                 /* (the host's ticks are the computer's real time, not the simulation's:
+                                                  * its milliseconds instead, so a script's clock can be followed) */
+static uint32_t sy_now(void) { return plat_ms() * 24000u; }
+#define sy_stamp() sy_now()
+#else
+#define sy_now() plat_ticks24()
+#define sy_stamp() plat_midi_in_t24()
+#endif
+static struct {
+    uint32_t ticks, q0, last, n;                 /* ticks since START; the quarter's first tick's time; the last's; ticks
+                                                  * timed (0: no quarter measured yet) */
+    float bpm;                                   /* the master's tempo, smoothed */
+    uint8_t here;                                /* a clock is coming in (a tick in the last half second) */
+    float out_acc;                               /* CLOCK OUT: ticks owed */
+    uint8_t out_run;                             /* CLOCK OUT: the run sent last (START / STOP) */
+} sy;
+static void sy_tick(uint32_t t)
+{
+    if (sy.n && t - sy.last > (uint32_t)(SY_T24 / 2.0f))
+        sy.n = 0;                                /* (a gap: start the measuring again) */
+    sy.last = t, sy.here = 1;
+    if (!sy.n)
+        sy.q0 = t;
+    sy.n++;
+    if (sy.n > 24u) {                            /* a quarter: the tempo */
+        float b = 60.0f * SY_T24 / (float)(t - sy.q0);
+        if (b > 30.0f && b < 300.0f)
+            sy.bpm = sy.bpm > 0.0f ? sy.bpm + (b - sy.bpm) * 0.3f : b;
+        sy.q0 = t, sy.n = 1;
+    }
+    sy.ticks++;
+    if (sy.bpm > 0.0f)
+        bpm_base = sy.bpm - gr.bpm_add;          /* (the master's tempo: BUILD's RUSH does not move it) */
+    if (ck.run && sy.ticks % 6u == 0u && sy.bpm > 0.0f) {   /* a sixteenth of the master's: pull ours onto it */
+        float age = (float)(sy_now() - t) * (SR / SY_T24);   /* (frames since it came) */
+        float ours = (float)(ck.step + 1u) - ck.left / ck.len, theirs = (float)(sy.ticks / 6u) + age / ck.len;
+        float err = ours - theirs;
+        if (err > -2.0f && err < 2.0f)
+            ck.left += err * ck.len * 0.25f;
+    }
+}
+static void sy_check(void)                       /* (the main loop) the clock gone: our own tempo again */
+{
+    static uint8_t was;
+    if (sy.here && sy_now() - sy.last > (uint32_t)(SY_T24 / 2.0f))
+        sy.here = 0, sy.n = 0, sy.bpm = 0.0f;
+    if (was && !sy.here)
+        apply();
+    was = sy.here;
+}
+static void sy_out(uint32_t n)                   /* (the render) CLOCK OUT for a block of n frames */
+{
+    uint32_t i, k;
+    if (!set.p[PA_CLKOUT] || sy.here) {          /* (off, or a master leads: one master) */
+        sy.out_run = ck.run;
+        return;
+    }
+    if (ck.run != sy.out_run) {
+        plat_midi_send(0x0Fu | (ck.run ? 0xFAu : 0xFCu) << 8, TO_USB);
+        sy.out_run = ck.run, sy.out_acc = 0.0f;
+    }
+    sy.out_acc += (float)n * ck.bpm * 24.0f / (60.0f * SR);
+    k = (uint32_t)sy.out_acc;
+    sy.out_acc -= (float)k;
+    for (i = 0; i < k; i++)
+        plat_midi_send(0x0Fu | 0xF8u << 8, TO_USB);
+}
+
 static void midi_in(void)                    /* audio interrupt: the packets that came in */
 {
     uint32_t pkt;
     int port;
     while (plat_midi_in(&pkt, &port)) {
         uint32_t st = (pkt >> 8) & 0xFFu, d1 = (pkt >> 16) & 0x7Fu, d2 = pkt >> 24;
+        if (set.p[PA_SYNC] == 0u && st >= 0xF8u && st <= 0xFCu) {   /* the clock and the transport (SYNC AUTO) */
+            if (st == 0xF8u)
+                sy_tick(sy_stamp());
+            else if (st == 0xFAu) {
+                sy.ticks = 0;
+                ck_start();
+            } else if (st == 0xFBu)
+                ck.run = 1;
+            else if (st == 0xFCu && ck.run) {
+                ck.run = 0;
+                gr_stop();
+            }
+        }
         if (st != 0xF8u && st != 0xFEu) {    /* (clock and active sensing would flood the screen) */
             midi_last = pkt;
             midi_last_port = (uint32_t)port;
@@ -44,6 +132,7 @@ void app_render(int32_t *lr, uint32_t n, uint32_t master_q12)
         n = APP_BLOCK;
     midi_in();
     core_render(n, &pos0, &pos1);
+    sy_out(n);
     wv_feed(b_kl, b_kr, n, pos0, (pos1 - pos0) / (float)n);
     for (i = 0; i < n; i++) {
         gain_now += (gain - gain_now) * 0.004f;                  /* ~5 ms: turning MASTER does not click */
@@ -56,7 +145,7 @@ void app_panic(void) { core_panic(); }
 
 /* the pages: their names, their four knobs, PRESET's value */
 enum { PG_HOME, PG_GROOVE, PG_RISE, PG_BUILD, PG_KEYS, PG_VOX, PG_CHOP, PG_PUMP, PG_SPACE, PG_ECHO, PG_SETUP, PG_TAPE,
-       PG_MIX, NPG };
+       PG_MIX, PG_MIDI, NPG };
 static const struct {
     const char *title;                           /* the header's big word, as the posters set it */
     int8_t stamp;                                /* its stamped letter */
@@ -75,9 +164,10 @@ static const struct {
     [PG_SETUP] = {"Setup", 0, {PA_KEY, PA_PADS, PA_KEYS_LV, PA_VOX_LV}, PA_SAVER},
     [PG_TAPE] = {"Tape", 0, {PA_TWOW, PA_TSAT, PA_TTONE, PA_THISS}, PA_TAPE},
     [PG_MIX] = {"Mix", 0, {PA_KICK, PA_HATS, PA_CLAP, PA_RISE_LV}, PA_PLAYMODE},
+    [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_TEMPO, PA_SWING}, PA_SYNC},
 };
 static const uint8_t PG_BUTTON[NPG] = {B_HOME, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_ENV, B_ENV, B_LFO, B_FX, B_FX, B_GLO, B_GLO,
-                                       B_GLO};   /* (the same button again: the next of its group) */
+                                       B_GLO, B_GLO};   /* (the same button again: the next of its group) */
 
 /* the tutor's tips (draw_title), in order: each gone once done (set.tips) */
 enum { TIP_PLAY, TIP_BUILD, TIP_ALGO, TIP_PADS, TIP_PAGES, TIP_SAVE, NTIP };
@@ -803,6 +893,7 @@ void app_frame(void)
     static uint32_t last_step = 0xFFFFFFFFu, last_run, last_inst = 99u, lit_any, last_bd;
     uint32_t i, now = plat_ms(), lit = 0;
     input();
+    sy_check();
     speak();
     tapefx_poll();                               /* TAPE's saturation curve, made here when it changes */
     if (FM1B_BLE_CENTRAL) {                  /* looking: a device found is named at once (REC connects to it) */
@@ -1066,6 +1157,10 @@ int app_expect(const char *what, int *got)
         *got = set_dirty;
     else if (!strcmp(what, "crev"))          /* CHOP: the slices played backwards */
         *got = (int)set.crev;
+    else if (!strcmp(what, "bpm"))           /* the tempo now (a MIDI clock's, when it leads) */
+        *got = (int)(ck.bpm + 0.5f);
+    else if (!strcmp(what, "step"))          /* the clock's sixteenth since PLAY */
+        *got = (int)ck.step;
     else if (!strcmp(what, "saver"))         /* the screensaver on */
         *got = sv.on;
     else if (!strcmp(what, "saver_frames"))  /* its film's frames (0: none) */

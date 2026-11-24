@@ -4,7 +4,7 @@
 """FM-1 Again's pictures for the README and the Firmware Hub, from the host simulator's screens (app/docs/shots.txt)
 and the screensaver's film as the FM-1 decodes it (app/media/again_saver.bin):
 
-    app/docs/img/screens.png   the logo, the screensaver, then the screens, 3 x 3 at 240 x 240 (loaf-breaker's way)
+    app/docs/img/screens.png   the boot screen (the logo), the screensaver, then the screens, 3 x 3 at 240 x 240 (loaf-breaker's way)
     app/docs/img/screen-*.png  each screen alone
     docs/card.png              the hub's card: 1024 x 1024, black and white (fmhub.json image)
 
@@ -92,9 +92,9 @@ def main():
     IMG.mkdir(parents=True, exist_ok=True)
     order = [("drop", "Drop!"), ("build", "Drop in 4"), ("pad", "a pad held"), ("chop", "CHOP, a slice reversed"),
              ("keys", "KEYS"), ("home2", "playing"), ("tape", "TAPE")]
-    tiles = [logo(), film_frame(FILM_FRAME)] + [Image.open(SHOTS / f"{n}.png").convert("RGB") for n, _ in order]
+    tiles = [Image.open(SHOTS / "boot.png").convert("RGB"), film_frame(FILM_FRAME)] + [Image.open(SHOTS / f"{n}.png").convert("RGB") for n, _ in order]
     grid(tiles, 3).save(IMG / "screens.png", optimize=True)
-    logo().save(IMG / "screen-logo.png", optimize=True)
+    Image.open(SHOTS / "boot.png").convert("RGB").save(IMG / "screen-logo.png", optimize=True)
     film_frame(FILM_FRAME).convert("1").save(IMG / "screen-saver.png", optimize=True)
     for n, _ in order:
         Image.open(SHOTS / f"{n}.png").convert("RGB").save(IMG / f"screen-{n}.png", optimize=True)

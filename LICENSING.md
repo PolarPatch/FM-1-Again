@@ -14,6 +14,7 @@ FM-1 Again by PolarPatch is GPL-3.0 as a whole (GPL-3.0-only, since parts of it 
 | `app/dsp/qdsp.h`, `app/tools/gen_tables.py` (→ `app/gen/again_tables.h`) | GPL-3.0-only. Felucca's `dsp.c` helpers (`mulq15`, `softclip`, `soft_knee`) and the parts of its `tools/gen_tables.py` these modules need, Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments, as Arctic Scream carries them; SPACE's tables GR!MM's (Copyright (C) 2026 GR!MM) |
 | Bluetooth | fm1-base's own stack (`ble_stack = "own"`: Henri David's from Optimist, in `base/bt/`, MPL-2.0): nothing of JieLi's binary libraries is linked, so the GPL parts above may be part of the firmware |
 | `app/assets/fonts/texgyreheros-bold.otf` and the faces made from it, `app/gen/again_font.h` | TeX Gyre Heros, Copyright 2007-2009 B. Jackowski, J. M. Nowacki (GUST e-foundry), under the GUST Font License (`app/assets/fonts/GUST-FONT-LICENSE.txt`) |
+| `app/gen/again_pixfont.h` (the boot screen's letters) and `app/boot.h` | The pixfont: Press Start 2P by the Press Start 2P Project Authors, rasterised at its 8 px grid by Arctic Scream p0larpatch's `tools/gen_pixfont.py` (a Modified Version under the OFL, so called "pixfont", not by its Reserved Font Name), under the SIL Open Font License 1.1 (`LICENSES/OFL-PressStart2P.txt`). The boot screen follows Arctic Scream p0larpatch's (PolarPatch) |
 
 ## The look
 

@@ -1,6 +1,8 @@
 # FM-1 Again's screens for the README and the hub (app/tools/make_shots.py): base/tools/build.py app --host, then
 #   app/build/host/again_host app/docs/shots.txt app/build/shots
-wait 600
+wait 3000
+shot boot.png
+wait 3000
 shot ready.png
 tap PLAY
 wait 7800

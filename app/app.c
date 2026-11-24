@@ -29,6 +29,7 @@
 #include "engine/revecho.h"
 #include "wave.h"
 #include "saver.h"
+#include "boot.h"
 
 /* ------------------------------------------------------------- parameters --- */
 /* every value a knob turns, 0 .. its top; the settings keep them */
@@ -1216,7 +1217,7 @@ void app_ui_init(void)
     touch_on(1);                             /* velocity and pressure: the keys' readings on */
     sv_init();                               /* the screensaver's film, if the resources hold it */
     sv.touch = plat_ms();
-    lcd_fill(0, 0, 240, 240, C_BLACK);
+    boot_start(plat_ms());                   /* the boot screen: FM-1 AGAIN in the storm (boot.h) */
     ui.redraw = ui.redraw_row = ui.redraw_title = 1;
 }
 
@@ -1237,6 +1238,14 @@ void app_frame(void)
         while ((ev = btdev_event()) != BTDEV_NONE)   /* a device connected, given up or lost */
             if (ev == BTDEV_CONNECTED || ev == BTDEV_NO_ANSWER || ev == BTDEV_LOST)
                 app_say("DEVICE", btdev_word(ev));
+    }
+    if (bt.on) {                                 /* the boot screen, until it is over or the first touch */
+        if (sv.touch - bt.t0 < 0x80000000u && sv.touch != bt.t0 && sv.touch - bt.t0 > 150u)
+            bt.on = 0;
+        else if (boot_frame(now))
+            return;
+        ui.full = 1;
+        ui.redraw = ui.redraw_row = ui.redraw_title = 1;
     }
     if (!sv.on && sv.p && set.p[PA_SAVER] && now - sv.touch >= SV_IDLE_MS) {
         sv.on = 1;                               /* untouched a minute: the film */

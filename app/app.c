@@ -935,10 +935,12 @@ void app_frame(void)
         sv_frame(now);
         return;
     }
-    if (ui.full) {                               /* back from the screensaver: everything */
-        lcd_fill(0, 0, 240, 240, C_BLACK);
+    if (ui.full)                                 /* everything again (back from the screensaver, the boot screen; the
+                                                  * mirror asking, which while the waveform runs is often): drawn over
+                                                  * what is there, never cleared first, so nothing flickers. The
+                                                  * header, the title bar, the panel, the pads and the row cover all
+                                                  * 240 x 240 */
         ui.redraw = ui.redraw_row = ui.redraw_title = 1;
-    }
     if (ui.msg_until && now >= ui.msg_until) {
         ui.msg_until = 0;
         ui.redraw = 1;

@@ -142,7 +142,7 @@ def picture(t):
         return SH['waves'].at(t * 0.8), 0
     if name == 'KEYS':
         tk = t - 16 * BEAT
-        img = SH['ambery'].at(0.1 + tk * 0.3) if tk < 2 * BAR else SH['blue'].at(2.0 + tk - 2 * BAR)
+        img = SH['blue'].at(0.5 + tk)
         return img, 2 if on_beat and int(b) % 4 == 0 else 0
     if name == 'VOX':
         return SH['hair'].at(t - 32 * BEAT), 2 if on_beat and int(b) % 4 == 0 else 0

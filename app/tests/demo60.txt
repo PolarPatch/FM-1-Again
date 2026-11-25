@@ -1,4 +1,4 @@
-# The 60 s demo's sound (bars of 124 BPM; docs/demo): again_host app/tests/demo60.txt app/build/demo
+# The 60 s demo's sound (bars of 124 BPM; tools/make_demo_video.py): again_host app/tests/demo60.txt app/build/demo
 master 4096
 wait 600
 turn K3 -46
@@ -48,130 +48,66 @@ key 12 up
 wait 48
 turn ALGO 1
 wait 49
-key 16 down 105
-wait 218
-key 16 up
-wait 24
-key 19 down 105
-wait 218
-key 19 up
-wait 24
-key 21 down 105
-wait 217
-key 21 up
-wait 25
-key 19 down 105
-wait 217
-key 19 up
-wait 25
-key 16 down 105
-wait 217
-key 16 up
-wait 25
-key 14 down 105
-wait 217
+key 11 down 100
+wait 334
+key 11 up
+wait 29
+key 9 down 100
+wait 334
+key 9 up
+wait 29
+key 7 down 92
+wait 667
+key 7 up
+wait 300
+key 4 down 100
+wait 223
+key 4 up
+wait 19
+key 7 down 100
+wait 334
+key 7 up
+wait 29
+key 9 down 100
+wait 334
+key 9 up
+wait 29
+key 11 down 92
+wait 890
+key 11 up
+wait 320
+key 11 down 100
+wait 334
+key 11 up
+wait 29
+key 9 down 100
+wait 334
+key 9 up
+wait 29
+key 7 down 92
+wait 445
+key 7 up
+wait 39
+key 9 down 100
+wait 222
+key 9 up
+wait 19
+key 11 down 92
+wait 446
+key 11 up
+wait 38
+key 14 down 92
+wait 668
 key 14 up
-wait 24
-key 12 down 105
-wait 218
-key 12 up
-wait 24
-key 14 down 105
-wait 218
-key 14 up
-wait 24
-key 16 down 105
-wait 218
-key 16 up
-wait 24
-key 19 down 105
-wait 218
-key 19 up
-wait 24
-key 23 down 105
-wait 218
-key 23 up
-wait 24
-key 21 down 105
-wait 218
-key 21 up
-wait 24
-key 19 down 105
-wait 218
-key 19 up
-wait 24
-key 16 down 105
-wait 218
-key 16 up
-wait 24
-key 19 down 105
-wait 218
-key 19 up
-wait 24
-key 21 down 105
-wait 218
-key 21 up
-wait 24
-key 23 down 105
-wait 218
-key 23 up
-wait 24
-key 21 down 105
-wait 218
-key 21 up
-wait 24
-key 19 down 105
-wait 217
-key 19 up
-wait 25
-key 16 down 105
-wait 217
-key 16 up
-wait 25
-key 19 down 105
-wait 217
-key 19 up
-wait 25
-key 21 down 105
-wait 217
-key 21 up
-wait 24
-key 23 down 105
-wait 218
-key 23 up
-wait 24
-key 24 down 105
-wait 218
-key 24 up
-wait 24
-key 23 down 105
-wait 218
-key 23 up
-wait 24
-key 21 down 105
-wait 218
-key 21 up
-wait 24
-key 19 down 105
-wait 218
-key 19 up
-wait 24
-key 21 down 105
-wait 218
-key 21 up
-wait 24
-key 16 down 105
-wait 218
-key 16 up
-wait 24
-key 14 down 105
-wait 218
-key 14 up
-wait 24
-key 16 down 105
-wait 218
-key 16 up
-wait 217
+wait 58
+key 11 down 100
+wait 223
+key 11 up
+wait 19
+key 9 down 92
+wait 779
+key 9 up
+wait 140
 turn ALGO 1
 wait 49
 key 0 down 110

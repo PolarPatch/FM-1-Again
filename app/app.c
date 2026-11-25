@@ -1139,8 +1139,17 @@ int32_t app_param_set(uint32_t i, int32_t v)
 }
 
 /* the mirror lost a part of the screen (APP_REDRAW): all of it again at the next frame, whatever is up */
+/* The mirror asks again every 50 ms while rows it could not send are dirty, and a whole screen fills its ring: while
+ * the waveform runs that would ask, flood, drop and ask again for ever, the viewer never catching up. So the whole
+ * screen at most every APP_REDRAW_MS; between them only what changes goes out, and the next one mends the rest */
+#define APP_REDRAW_MS 2000u
 void app_redraw(void)
 {
+    static uint32_t last;
+    uint32_t now = plat_ms();
+    if (last && now - last < APP_REDRAW_MS)
+        return;
+    last = now ? now : 1u;
     ui.full = 1;
     ui.redraw = ui.redraw_row = ui.redraw_title = 1;
     bt.force = 1;

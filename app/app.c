@@ -398,7 +398,7 @@ static void speak(void)
     uint32_t k;
     if (ann_on() && ann_where()) {
         t[0] = 0;
-        text_cat(t, set.page == PG_HOME ? APP_NAME : PG[set.page].title);
+        text_cat(t, set.page == PG_HOME ? "HOME" : PG[set.page].title);   /* (as a page change says it) */
         text_cat(t, ck.run ? ". PLAYING. " : ". ");
         for (k = 0; k < 4u; k++) {
             uint32_t p = PG[set.page].k[k];

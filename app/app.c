@@ -126,7 +126,11 @@ static void midi_in(void)                    /* audio interrupt: the packets tha
             midi_last_port = (uint32_t)port;
             midi_count++;
         }
-        if ((st & 0xF0u) == 0x90u && d2)
+        if ((st & 0xF0u) == 0xB0u)              /* the mod wheel, volume, the pedal, all notes off */
+            mb_cc(d1, d2);
+        else if ((st & 0xF0u) == 0xE0u)         /* pitch bend */
+            mb_bend(d1 | (d2 & 0x7Fu) << 7);
+        else if ((st & 0xF0u) == 0x90u && d2)
             play_note((int32_t)d1, d2, 1, 1);
         else if ((st & 0xF0u) == 0x80u || (st & 0xF0u) == 0x90u)
             play_note((int32_t)d1, 0, 0, 1);

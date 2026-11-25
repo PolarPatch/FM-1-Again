@@ -114,12 +114,13 @@ static void kp_render(float *l, float *r, float *send, uint32_t n)
         kp_voice_t *v = &kp.v[j];
         if (v->note < 0)
             continue;
+        float inc = v->inc * mb_pitch;           /* (the bend and the vibrato, this block's) */
         for (i = 0; i < n; i++) {
             float m = fm_sin_turns(v->ph_m) * v->ix, t = v->tine > 0.0f ? fm_sin_turns(v->ph_t) * v->tine : 0.0f, s, tr;
             s = fm_sin_turns(v->ph_c + m + t);
-            v->ph_c += v->inc;
-            v->ph_m += v->inc;
-            v->ph_t += 14.0f * v->inc;
+            v->ph_c += inc;
+            v->ph_m += inc;
+            v->ph_t += 14.0f * inc;
             v->ph_c -= v->ph_c >= 1.0f ? 1.0f : 0.0f;
             v->ph_m -= v->ph_m >= 1.0f ? 1.0f : 0.0f;
             v->ph_t -= fm_floorf(v->ph_t);

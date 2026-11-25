@@ -202,6 +202,10 @@ tempo as a clock to the computer over USB, with START and STOP, while no clock l
 10 (General MIDI drum notes), the chords on channel 4, RISE on channel 5; the keys stay on channel 1. STOP sends all
 notes off on those channels. Turn it off when the FM-1 is only a controller.
 
+**MIDI in.** Besides notes: pitch bend (two semitones up and down) and the mod wheel (a vibrato) bend KEYS, VOX and
+CHOP; a sustain pedal (CC 64) holds what you play until it lets go; CC 7 is the volume; CC 120 and 123 let every note
+go.
+
 ## 9. The screen reader
 
 FM-1 Again speaks to fm1-reader, as every fm1-base firmware does: each page, value and message is said as it

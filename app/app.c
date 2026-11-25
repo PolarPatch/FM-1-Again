@@ -735,21 +735,21 @@ static void draw_header(void)
         uint32_t k;
         for (k = 0; k < NPF && !(held >> k & 1u); k++)
             ;
-        title_case(PF_NAME[k], t);
-        poster_text(8, 2, t, 0);
+        title_case(PF_NAME[k], t);              /* (no stamped letter: its grain looked like the screensaver left over) */
+        poster_text(8, 2, t, -1);
     } else if (set.page != PG_HOME)
         poster_text(8, 2, PG[set.page].title, PG[set.page].stamp);
     else if (ck.run && gr.drops && ck.step - gr.drop_step < 8u)
-        poster_text(8, 2, "Drop!", 0);
+        poster_text(8, 2, "Drop!", -1);
     else if (ck.run && gr.bd == BD_BUILD) {
         uint32_t left = gr.bd_bars - (ck.step - gr.bd_from) / 16u;
         t[0] = 0;
         text_cat(t, "Drop in ");
         int_text((int32_t)left, n);
         text_cat(t, n);
-        poster_text(8, 2, t, 0);
+        poster_text(8, 2, t, -1);
     } else if (ck.run && gr.bd == BD_ARMED)
-        poster_text(8, 2, "Build...", 0);
+        poster_text(8, 2, "Build...", -1);
     else if (ck.run && gr.song) {                /* SONG: the section and its bar */
         t[0] = 0;
         text_cat(t, GR_SONG[gr.sec % GR_NSEC].name);
@@ -759,7 +759,7 @@ static void draw_header(void)
         text_cat(t, "/");
         int_text((int32_t)GR_SONG[gr.sec % GR_NSEC].bars, n);
         text_cat(t, n);
-        poster_text(8, 2, t, 0);
+        poster_text(8, 2, t, -1);
     } else if (ck.run) {
         t[0] = 0;
         text_cat(t, "Bar ");
@@ -768,10 +768,10 @@ static void draw_header(void)
         text_cat(t, ".");
         int_text((int32_t)(step % 16u) / 4 + 1, n);
         text_cat(t, n);
-        poster_text(8, 2, t, 0);
+        poster_text(8, 2, t, -1);
     } else {                                     /* stopped: the groove's name */
         title_case(PAT_NAME[set.p[PA_PAT]], t);
-        poster_text(8, 2, t, 0);
+        poster_text(8, 2, t, -1);
     }
     /* line 2: a message for a moment; else the page's choice (HOME: the tempo) */
     if (plat_ms() < ui.msg_until) {

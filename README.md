@@ -9,7 +9,7 @@ fall. A sister to [Arctic Scream p0larpatch](https://github.com/PolarPatch/Arcti
 [install](https://polarpatch.github.io/FM-1-Again/install/) ·
 [editor](https://polarpatch.github.io/FM-1-Again/editor/) ·
 [cheat sheet](https://polarpatch.github.io/FM-1-Again/cheatsheet.html) ·
-[manual](app/docs/MANUAL.md) · [releases](https://github.com/PolarPatch/FM-1-Again/releases)
+[manual](app/docs/MANUAL.md) · [demo video](https://youtu.be/FJ0DTtbBlUM) · [releases](https://github.com/PolarPatch/FM-1-Again/releases)
 
 ![FM-1 Again's screens: the name, the screensaver, the drop, a build ("Drop in 4"), a pad held (stutter), CHOP with a slice reversed, KEYS, playing, TAPE](app/docs/img/screens.png)
 

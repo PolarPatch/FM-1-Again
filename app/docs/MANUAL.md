@@ -106,7 +106,8 @@ Groove (8), Build (4), Drop (16), Break (8, no drums), Build (4), Drop (16), Out
 section and its bar.
 All the drums are synthesized: a kick, a clap, a ghost snare, closed and open hats, a shaker and a rim.
 
-**The chords (CHORDS):** LONGING, NIGHT BUS, HOPE and FLOAT, four chords of two bars each, in the KEY you set. OFF
+**The chords (CHORDS):** LONGING, NIGHT BUS, HOPE, FLOAT and FOG, four chords of two bars each, in the KEY you set (FOG
+rocks between two: the major and its relative minor, as C add9 and A minor 7 in A). OFF
 leaves the keys to you.
 
 **KEYS** is a soft FM electric piano of my own: a bark that softens as the note rings, a short tine at the start,

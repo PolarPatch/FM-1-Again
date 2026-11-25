@@ -1,355 +1,457 @@
-# The 60 s demo's sound (bars of 124 BPM; tools/make_demo_video.py): again_host app/tests/demo60.txt app/build/demo
+# The 60 s demo's sound, made by tools/demo60.py (edit that, not this): again_host app/tests/demo60.txt app/build/demo
 master 4096
 wait 600
+tap EDIT
+wait 50
+turn K3 4
+turn PRESET -3
+wait 50
+tap HOME
+wait 50
 turn K3 -46
 wait 300
 wav again-demo-60.wav
 tap PLAY
-wait 1285
-turn K3 8
-wait 1291
-turn K3 8
-wait 1290
-turn K3 8
-wait 1290
-turn K3 8
-wait 1291
-turn K3 8
-wait 1290
-turn K3 8
-wait 5
-key 16 down 100
-wait 1306
-key 16 up
-wait 146
-key 14 down 100
-wait 435
-key 14 up
-wait 48
-key 12 down 100
-wait 1742
-key 12 up
-wait 194
-key 16 down 100
-wait 871
-key 16 up
-wait 97
-key 19 down 100
-wait 871
-key 19 up
-wait 96
-key 14 down 100
-wait 871
-key 14 up
-wait 97
-key 12 down 100
-wait 871
-key 12 up
-wait 48
-turn ALGO 1
-wait 49
-key 11 down 100
-wait 334
-key 11 up
-wait 29
-key 9 down 100
-wait 334
-key 9 up
-wait 29
+wait 1114
+turn K3 8 20
+wait 1130
+turn K3 8 20
+wait 1130
+turn K3 8 20
+wait 1131
+turn K3 8 20
+wait 1130
+turn K3 8 20
+wait 1130
+turn K3 8 20
 key 7 down 92
-wait 667
-key 7 up
-wait 300
-key 4 down 100
-wait 223
-key 4 up
-wait 19
-key 7 down 100
-wait 334
-key 7 up
-wait 29
-key 9 down 100
-wait 334
-key 9 up
-wait 29
 key 11 down 92
-wait 890
-key 11 up
-wait 320
-key 11 down 100
-wait 334
-key 11 up
-wait 29
-key 9 down 100
-wait 334
-key 9 up
-wait 29
-key 7 down 92
-wait 445
+wait 601
 key 7 up
-wait 39
-key 9 down 100
-wait 222
-key 9 up
-wait 19
-key 11 down 92
-wait 446
 key 11 up
-wait 38
-key 14 down 92
-wait 668
-key 14 up
-wait 58
-key 11 down 100
-wait 223
-key 11 up
-wait 19
+wait 54
 key 9 down 92
-wait 779
+wait 220
 key 9 up
-wait 140
-turn ALGO 1
-wait 49
-key 0 down 110
-wait 218
-key 0 up
-wait 24
-key 2 down 110
-wait 217
-key 2 up
-wait 25
-key 4 down 110
-wait 217
-key 4 up
-wait 25
-key 0 down 110
-wait 217
-key 0 up
-wait 25
-key 7 down 110
-wait 217
-key 7 up
-wait 24
-key 4 down 110
-wait 218
-key 4 up
-wait 24
-key 2 down 110
-wait 218
-key 2 up
-wait 24
-key 9 down 110
-wait 218
-key 9 up
-wait 24
-key 0 down 110
-wait 218
-key 0 up
-wait 24
-key 0 down 110
-wait 218
-key 0 up
-wait 24
-key 4 down 110
-wait 218
-key 4 up
-wait 24
-key 7 down 110
-wait 218
-key 7 up
-wait 24
-key 11 down 110
-wait 218
+wait 18
+key 11 down 92
+key 14 down 92
+wait 441
 key 11 up
-wait 24
-key 9 down 110
-wait 218
-key 9 up
-wait 24
-key 7 down 110
-wait 218
-key 7 up
-wait 24
-key 12 down 110
-wait 218
-key 12 up
-wait 24
-key 0 down 110
-wait 218
-key 0 up
-wait 24
-key 2 down 110
-wait 217
-key 2 up
-wait 25
-key 4 down 110
-wait 217
-key 4 up
-wait 25
-key 0 down 110
-wait 217
-key 0 up
-wait 25
-key 7 down 110
-wait 217
-key 7 up
-wait 24
-key 4 down 110
-wait 218
-key 4 up
-wait 24
-key 2 down 110
-wait 218
-key 2 up
-wait 24
-key 9 down 110
-wait 218
-key 9 up
-wait 24
-key 12 down 110
-wait 218
-key 12 up
-wait 24
-key 11 down 110
-wait 218
-key 11 up
-wait 24
-key 9 down 110
-wait 218
-key 9 up
-wait 24
-key 7 down 110
-wait 218
-key 7 up
-wait 24
-key 4 down 110
-wait 218
-key 4 up
-wait 24
-key 2 down 110
-wait 218
-key 2 up
-wait 24
-key 0 down 110
-wait 218
-key 0 up
-wait 24
-key 0 down 110
-wait 193
-turn ALGO -1
-wait 25
-key 0 up
-wait 24
-key 3 down 100
-key 16 down 100
-wait 217
+key 14 up
+wait 276
+key 14 down 92
+wait 221
+key 14 up
+wait 17
+key 16 down 92
+wait 332
 key 16 up
-wait 25
-key 19 down 100
-wait 217
+wait 27
+key 14 down 92
+wait 332
+key 14 up
+wait 27
+key 11 down 92
+wait 1111
+key 11 up
+wait 95
+key 4 down 92
+key 11 down 92
+wait 664
+key 4 up
+key 11 up
+wait 54
+key 7 down 92
+wait 220
+key 7 up
+wait 18
+key 11 down 92
+key 16 down 92
+wait 441
+key 11 up
+key 16 up
+wait 276
+key 14 down 92
+wait 221
+key 14 up
+wait 17
+key 11 down 92
+wait 332
+key 11 up
+wait 27
+key 9 down 92
+wait 332
+key 9 up
+wait 27
+key 7 down 92
+wait 1111
+key 7 up
+turn ALGO 1 20
+wait 75
+key 11 down 104
+wait 220
+key 11 up
+wait 139
+key 14 down 104
+wait 220
+key 14 up
+wait 139
+key 16 down 104
+wait 443
+key 16 up
+wait 278
+key 14 down 104
+wait 221
+key 14 up
+wait 17
+key 11 down 104
+wait 221
+key 11 up
+wait 17
+key 14 down 104
+wait 332
+key 14 up
+wait 27
+key 11 down 104
+wait 332
+key 11 up
+wait 27
+key 9 down 104
+wait 888
+key 9 up
+wait 318
+key 11 down 104
+wait 220
+key 11 up
+wait 139
+key 14 down 104
+wait 220
+key 14 up
+wait 139
+key 16 down 104
+wait 443
+key 16 up
+wait 278
+key 19 down 104
+wait 221
 key 19 up
-wait 508
+wait 17
+key 16 down 104
+wait 221
+key 16 up
+wait 17
+key 14 down 104
+wait 332
+key 14 up
+wait 27
+key 16 down 104
+wait 332
+key 16 up
+wait 27
+key 11 down 104
+wait 888
+key 11 up
+wait 221
+turn ALGO 1 20
+wait 77
+key 4 down 110
+wait 220
+key 4 up
+wait 139
+key 4 down 110
+wait 109
+key 4 up
+wait 250
+key 2 down 110
+wait 331
+key 2 up
+wait 148
+key 4 down 110
+wait 110
+key 4 up
+wait 128
+key 2 down 110
+wait 221
+key 2 up
+wait 259
+key 26 down 110
+wait 221
+key 26 up
+wait 138
+key 26 down 110
+wait 109
+key 26 up
+wait 250
+key 23 down 110
+wait 332
+key 23 up
+wait 148
+key 26 down 110
+wait 109
+key 26 up
+wait 129
+key 23 down 110
+wait 220
+key 23 up
+wait 260
+key 0 down 110
+wait 220
+key 0 up
+wait 139
+key 0 down 110
+wait 109
+key 0 up
+wait 250
+key 11 down 110
+wait 331
+key 11 up
+wait 148
+key 0 down 110
+wait 110
+key 0 up
+wait 128
+key 11 down 110
+wait 221
+key 11 up
+wait 259
+key 2 down 110
+wait 221
+key 2 up
+wait 138
+key 2 down 110
+wait 109
+key 2 up
+wait 250
+key 7 down 110
+wait 332
+key 7 up
+wait 148
+key 2 down 110
+wait 109
+key 2 up
+wait 129
+key 7 down 110
+wait 220
+key 7 up
+wait 163
+turn ALGO -1 20
+wait 77
+key 3 down 100
+key 14 down 100
+wait 218
+key 14 up
+wait 18
+key 11 down 100
+wait 220
+key 11 up
+wait 501
 key 3 up
 key 8 down 100
-wait 871
+wait 887
 key 8 up
-wait 97
+wait 75
 key 17 down 100
-key 19 down 100
-wait 436
-key 19 up
-wait 48
 key 16 down 100
-wait 436
+wait 441
 key 16 up
-wait 48
+wait 37
+key 11 down 100
+wait 443
+key 11 up
+wait 37
 key 17 up
-key 21 down 100
+key 19 down 100
 key 5 down 100
-wait 218
-key 21 up
 wait 217
+key 19 up
+wait 220
 key 5 up
-wait 49
+wait 37
 key 15 down 100
-wait 1306
+wait 1333
 key 15 up
-wait 145
-turn ALGO -1
+wait 18
+turn ALGO -1 20
+wait 76
 key 25 down 100
-wait 484
+wait 482
 tap ARP
-wait 387
+wait 327
 key 25 up
-wait 97
-key 16 down 90
-wait 1742
-key 16 up
-wait 194
-key 14 down 90
-wait 1742
+wait 75
+key 4 down 88
+key 11 down 88
+wait 1688
+key 4 up
+key 11 up
+wait 240
+key 7 down 88
+key 14 down 88
+wait 1687
+key 7 up
 key 14 up
-wait 193
-key 12 down 90
-wait 1742
-key 12 up
-wait 194
-key 19 down 90
-wait 1524
+wait 240
+key 11 down 88
+key 19 down 88
+wait 1688
+key 11 up
 key 19 up
-wait 411
-key 16 down 115
-wait 653
+wait 240
+key 16 down 88
+key 23 down 88
+wait 1554
 key 16 up
-wait 315
-key 16 down 115
-wait 653
+key 23 up
+wait 373
+key 16 down 112
+key 19 down 112
+wait 219
 key 16 up
-wait 315
-key 14 down 115
-wait 653
-key 14 up
-wait 314
-key 14 down 115
-wait 654
-key 14 up
-wait 314
-key 12 down 115
-wait 653
-key 12 up
-wait 315
-key 12 down 115
-wait 653
-key 12 up
-wait 315
-key 19 down 115
-wait 653
 key 19 up
-wait 314
-key 19 down 115
-wait 654
+wait 499
+key 11 down 96
+key 16 down 96
+wait 219
+key 11 up
+key 16 up
+wait 257
+key 11 down 96
+key 16 down 96
+wait 107
+key 11 up
+key 16 up
+wait 127
+key 11 down 96
+key 16 down 96
+wait 218
+key 11 up
+key 16 up
+wait 258
+key 14 down 112
+key 19 down 112
+wait 218
+key 14 up
 key 19 up
-wait 314
-key 16 down 115
-wait 653
-key 16 up
-wait 315
-key 16 down 115
-wait 653
-key 16 up
-wait 315
-key 14 down 115
-wait 653
+wait 499
+key 11 down 96
+key 14 down 96
+wait 219
+key 11 up
 key 14 up
-wait 314
-key 14 down 115
-wait 654
+wait 257
+key 11 down 96
+key 14 down 96
+wait 108
+key 11 up
 key 14 up
-wait 314
+wait 126
+key 11 down 96
+key 14 down 96
+wait 219
+key 11 up
+key 14 up
+wait 257
+key 14 down 112
+key 19 down 112
+wait 219
+key 14 up
+key 19 up
+wait 499
+key 11 down 96
+key 14 down 96
+wait 218
+key 11 up
+key 14 up
+wait 258
+key 11 down 96
+key 14 down 96
+wait 107
+key 11 up
+key 14 up
+wait 127
+key 11 down 96
+key 14 down 96
+wait 218
+key 11 up
+key 14 up
+wait 258
+key 16 down 112
+key 19 down 112
+wait 218
+key 16 up
+key 19 up
+wait 499
+key 11 down 96
+key 16 down 96
+wait 219
+key 11 up
+key 16 up
+wait 257
+key 11 down 96
+key 16 down 96
+wait 108
+key 11 up
+key 16 up
+wait 126
+key 11 down 96
+key 16 down 96
+wait 219
+key 11 up
+key 16 up
+wait 257
+key 16 down 112
+key 19 down 112
+wait 219
+key 16 up
+key 19 up
+wait 499
+key 11 down 96
+key 16 down 96
+wait 218
+key 11 up
+key 16 up
+wait 258
+key 11 down 96
+key 16 down 96
+wait 107
+key 11 up
+key 16 up
+wait 127
+key 11 down 96
+key 16 down 96
+wait 218
+key 11 up
+key 16 up
+wait 258
+key 14 down 112
+key 19 down 112
+wait 218
+key 14 up
+key 19 up
+wait 499
+key 11 down 96
+key 14 down 96
+wait 219
+key 11 up
+key 14 up
+wait 257
+key 11 down 96
+key 14 down 96
+wait 108
+key 11 up
+key 14 up
+wait 126
+key 11 down 96
+key 14 down 96
+wait 219
+key 11 up
+key 14 up
+wait 257
 key 10 down 100
-wait 2903
+wait 2901
 tap PLAY
-wait 484
+wait 404
 key 10 up
-wait 1936
+wait 1934
 wavstop

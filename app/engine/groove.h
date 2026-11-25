@@ -41,14 +41,16 @@ static const gr_pat_t GR_PAT[GR_NPAT] = {
       "................", "................"}}};
 
 /* PROG: four chords, two bars each: (degree over KEY, chord) */
-#define GR_NPROG 5
-static const char *const PROG_NAME[GR_NPROG] = {"OFF", "LONGING", "NIGHT BUS", "HOPE", "FLOAT"};
+#define GR_NPROG 6
+static const char *const PROG_NAME[GR_NPROG] = {"OFF", "LONGING", "NIGHT BUS", "HOPE", "FLOAT", "FOG"};
 static const uint8_t GR_PROG[GR_NPROG][4][2] = {
     {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{0, CH_MIN9}, {8, CH_MAJ9}, {3, CH_MAJ9}, {10, CH_ADD9}},
     {{0, CH_MIN9}, {5, CH_MIN7}, {3, CH_MAJ7}, {10, CH_SUS2}},
     {{0, CH_ADD9}, {7, CH_ADD9}, {9, CH_MIN7}, {5, CH_MAJ7}},
-    {{0, CH_MIN9}, {0, CH_MIN9}, {5, CH_MIN9}, {8, CH_MAJ7}}};
+    {{0, CH_MIN9}, {0, CH_MIN9}, {5, CH_MIN9}, {8, CH_MAJ7}},
+    {{3, CH_ADD9}, {0, CH_MIN7}, {3, CH_ADD9}, {0, CH_MIN7}}};   /* FOG (1.0.4): the major and its relative minor,
+                                                                 * round and round (a two-chord loop: I, vi7) */
 enum { CR_HOLD, CR_STABS, CR_PULSE, NCR };
 static const char *const CR_NAME[NCR] = {"HOLD", "STABS", "PULSE"};
 

@@ -53,7 +53,7 @@ THR = np.tile(bayer(4), (GH // 4, GW // 4))
 
 # ---- the footage: shots, each a clip's stretch cut to 16:9 (centre cx, cy; zoom z), levels stretched
 def shot(name, start, dur, cx=0.5, cy=0.5, z=1.0, gamma=1.0):
-    path = os.path.join(CLIPS, name + '.mov')
+    path = os.path.join(CLIPS, name if name.endswith('.mov') else name + '.mov')
     w, h = map(int, subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
                                     'stream=width,height', '-of', 'csv=p=0', path],
                                    capture_output=True, text=True).stdout.strip().split(','))
@@ -90,13 +90,22 @@ SH = {
     'stage':   Shot('screen05', 11.5, 9.0, cy=0.0, z=1.9),         # (the cloth over the stage, no one under it)
     'arms':    Shot('screen02', 0.0, 4.3, cy=0.42),
     'fogcrowd': Shot('screen01', 4.6, 1.8, cy=0.7, z=1.3),
+    # inspo/: more of the drop (the crowd, the cloth and the light; where someone stands on the stage, only the
+    # cloth over it is cut out)
+    'waves':   Shot('inspo/FA_FABRIC CLOSE UP 2_FOGGY.mov', 0.0, 12.0),
+    'sparkle': Shot('inspo/FA_FABRIC SUPER CLOSE_FOGGY (1).mov', 0.0, 14.0),
+    'tunnel':  Shot('inspo/6.mov', 0.0, 9.0, gamma=0.9),
+    'ambery':  Shot('inspo/FA_AMBERY_NO SOUND_1.mov', 0.0, 5.2),
+    'blue':    Shot('inspo/5.mov', 0.0, 13.0, cy=0.55),
+    'okcloth': Shot('inspo/FA_OK OK_NO SOUND_1.mov', 0.0, 10.0, cy=0.0, z=1.8),
+    'facloth': Shot('inspo/FA_FACILITA_NO SOUND.mov', 0.0, 10.0, cy=0.0, z=1.9),
 }
 
 
 # ---- the edit: what plays when (seconds of the sound); each gives (grey image, caption, line 2)
 PARTS = [  # start, name, what it says
     (0.0, 'INTRO', ''),
-    (16 * BEAT, 'KEYS', 'SOFT FM PIANO: ONE KEY, A CHORD'),
+    (16 * BEAT, 'KEYS', 'A SOFT FM ELECTRIC PIANO'),
     (32 * BEAT, 'VOX', 'SUNG SYLLABLES ON THE KEYS'),
     (48 * BEAT, 'CHOP', 'A RECORDING, CUT INTO SLICES'),
     (64 * BEAT, 'STUTTER 1/16', 'HOLD A BLACK KEY: A TRICK'),
@@ -106,7 +115,7 @@ PARTS = [  # start, name, what it says
     (71 * BEAT, 'LOW SWEEP', 'A LOW-PASS CLOSING'),
     (74 * BEAT, 'DRUMS OUT', ''),
     (76 * BEAT, 'BUILD', 'ARP: FOUR BARS TO THE DROP'),
-    (92 * BEAT, 'DROP', 'THE PUMP, THE ROOM, THE TAPE'),
+    (92 * BEAT, 'DROP', 'CHORDS: FOG. THE PUMP, THE ROOM'),
     (116 * BEAT, 'TAPE STOP', ''),
     (120.5 * BEAT, 'END', ''),
 ]
@@ -120,7 +129,7 @@ def part(t):
     return cur
 
 
-DROP_CUTS = ['arms', 'hair', 'fogcrowd', 'dancer', 'hands', 'hair', 'fog', 'dancer', 'arms', 'hair', 'fogcrowd', 'hair']
+DROP_CUTS = ['arms', 'okcloth', 'ambery', 'hair', 'sparkle', 'hands', 'facloth', 'fogcrowd', 'waves', 'dancer', 'arms', 'blue']
 
 
 def picture(t):
@@ -130,15 +139,17 @@ def picture(t):
     fi = int(round(t * FPS))
     on_beat = int(t / BEAT) != int((t - 1 / FPS) / BEAT)     # the first frame of a beat
     if name == 'INTRO':
-        return SH['fog'].at(t * 0.75), 0
+        return SH['waves'].at(t * 0.8), 0
     if name == 'KEYS':
-        return SH['dancer'].at(t - 16 * BEAT), 2 if on_beat and int(b) % 4 == 0 else 0
+        tk = t - 16 * BEAT
+        img = SH['ambery'].at(0.1 + tk * 0.3) if tk < 2 * BAR else SH['blue'].at(2.0 + tk - 2 * BAR)
+        return img, 2 if on_beat and int(b) % 4 == 0 else 0
     if name == 'VOX':
         return SH['hair'].at(t - 32 * BEAT), 2 if on_beat and int(b) % 4 == 0 else 0
     if name == 'CHOP':                              # a cut each half beat, as the slices
         h = int((t - 48 * BEAT) / (BEAT / 2))
-        src = [('hair', 8.0), ('shadow', 0.3), ('fogcrowd', 0.2), ('dancer', 5.0), ('hair', 11.0), ('shadow', 2.0),
-               ('hands', 1.0), ('hair', 13.5)][h % 8]
+        src = [('sparkle', 2.0), ('arms', 0.3), ('fogcrowd', 0.2), ('tunnel', 1.0), ('hair', 11.0), ('ambery', 2.0),
+               ('hands', 1.0), ('waves', 6.0)][h % 8]
         s = src[1] + (h // 8) * 0.6 + (t - 48 * BEAT - h * BEAT / 2)
         return SH[src[0]].at(s), (2 if h % 8 == 0 else 1) if on_beat else 0
     tt = t - 64 * BEAT
@@ -148,8 +159,8 @@ def picture(t):
     if name == 'REVERSE':
         return SH['hands'].at(1.0 + 2 * BEAT - (tt - 2 * BEAT)), 0
     if name == 'ECHO THROW':                        # the picture echoes: two ghosts a beat apart
-        s = 1.2 + (tt - 4 * BEAT)
-        a, g1, g2 = SH['hands'].at(s), SH['hands'].at(s - BEAT / 2), SH['hands'].at(s - BEAT)
+        s = 3.0 + (tt - 4 * BEAT)
+        a, g1, g2 = SH['sparkle'].at(s), SH['sparkle'].at(s - BEAT / 2), SH['sparkle'].at(s - BEAT)
         return np.maximum(a, np.maximum(g1 * 0.7, g2 * 0.45)), 0
     if name == 'STUTTER 1/32':
         loop = BEAT / 8
@@ -166,8 +177,8 @@ def picture(t):
         return SH['fogcrowd'].at(tt - 10 * BEAT) * 0.45, 0
     if name == 'BUILD':                             # closer and closer; the strobe faster each bar
         k = (t - 76 * BEAT) / (16 * BEAT)
-        img = SH['stage'].at(t - 76 * BEAT)
-        z = 1 + 0.8 * k * k
+        img = SH['tunnel'].at((t - 76 * BEAT) * 1.1)
+        z = 1 + 1.6 * k * k
         h, w = int(GH / z), int(GW / z)
         y0, x0 = (GH - h) // 2, (GW - w) // 2
         img = img[y0:y0 + h, x0:x0 + w].repeat(int(np.ceil(z)) + 1, 0).repeat(int(np.ceil(z)) + 1, 1)
@@ -185,13 +196,13 @@ def picture(t):
             return np.ones((GH, GW), np.float32), 0
         c = int(td / (2 * BEAT))
         sname = DROP_CUTS[c % len(DROP_CUTS)]
-        img = SH[sname].at((td % (2 * BEAT)) + [0.0, 3.0, 0.0, 1.0, 1.5, 9.0, 0.3, 4.5, 2.0, 12.0, 0.6, 6.0][c % 12])
+        img = SH[sname].at((td % (2 * BEAT)) + [0.0, 2.0, 0.5, 9.0, 3.0, 1.5, 4.0, 0.2, 6.0, 4.5, 2.2, 7.0][c % 12])
         return np.clip(img * 1.15, 0, 1), (2 if int(b) % 4 == 0 else 1) if on_beat else 0
     if name == 'TAPE STOP':                         # slower and slower to a stop, and dark
         ts = t - 116 * BEAT
         k = min(ts / (4 * BEAT), 1)
         s = 4.0 + ts * (1 - k / 2)
-        return SH['hair'].at(s) * (1 - k), 0
+        return SH['sparkle'].at(6.0 + (s - 4.0)) * (1 - k), 0
     return np.zeros((GH, GW), np.float32), 0
 
 
@@ -269,7 +280,7 @@ def frame(t, end):
         # 0 .. 1 bar: the storm out of the dark; to 2 bars the title whole, ghosts torn in; then it sinks into the
         # dither and the crowd comes up behind it
         bg_k = min(max((t - 2 * BAR) / (2 * BAR), 0), 1)
-        img = SH['fog'].at(0.25 + max(t - 2 * BAR, 0) * 0.45) * bg_k   # (the fog's bright crowd)
+        img = SH['waves'].at(max(t - 2 * BAR, 0) * 0.8) * bg_k        # (the cloth's slow waves, as FOG's sound)
         rgb[img > THR] = 255
         storm = max(0, 1 - t / (0.9 * BAR)) if t > 0.15 else 0
         light = 1 - 0.85 * bg_k

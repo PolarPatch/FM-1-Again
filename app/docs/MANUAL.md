@@ -198,7 +198,7 @@ groove. When the clock stops coming, your own TEMPO is back. INTERNAL ignores it
 tempo as a clock to the computer over USB, with START and STOP, while no clock leads.
 
 **NOTES OUT** (on by default) sends what the groove plays as MIDI notes, over USB and Bluetooth: the drums on channel
-2 (General MIDI drum notes), the chords on channel 4, RISE on channel 5; the keys stay on channel 1. STOP sends all
+10 (General MIDI drum notes), the chords on channel 4, RISE on channel 5; the keys stay on channel 1. STOP sends all
 notes off on those channels. Turn it off when the FM-1 is only a controller.
 
 ## 9. The screen reader

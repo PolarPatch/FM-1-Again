@@ -345,9 +345,9 @@ static void value_text(uint32_t i, char *t)
         break;
     case FMT_FILTER:
         if (v > 52)
-            text_cat(t, "HP "), int_text((v - 52) * 100 / 48, t + 3);
+            text_cat(t, "HP"), int_text((v - 52) * 100 / 48, t + 2);   /* ("HP33": one word, "FILTER HP33" read right) */
         else if (v < 48)
-            text_cat(t, "LP "), int_text((48 - v) * 100 / 48, t + 3);
+            text_cat(t, "LP"), int_text((48 - v) * 100 / 48, t + 2);
         else
             text_cat(t, "OPEN");
         break;
@@ -399,7 +399,7 @@ static void speak(void)
     if (ann_on() && ann_where()) {
         t[0] = 0;
         text_cat(t, set.page == PG_HOME ? "HOME" : PG[set.page].title);   /* (as a page change says it) */
-        text_cat(t, ck.run ? ". PLAYING. " : ". ");
+        text_cat(t, ". ");
         for (k = 0; k < 4u; k++) {
             uint32_t p = PG[set.page].k[k];
             value_text(p, v);
@@ -410,6 +410,8 @@ static void speak(void)
         }
         text_cat(t, "KEYS PLAY ");
         text_cat(t, IN_NAME[set.inst]);
+        if (ck.run)                              /* (after the knobs: a reader takes the first sentences as them) */
+            text_cat(t, ". PLAYING");
         ann_say(t, 0, ANN_NOW);
     }
     ann_tick(plat_ms());

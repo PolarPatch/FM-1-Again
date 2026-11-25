@@ -11,7 +11,17 @@
  * scope. */
 #include "fastmath.h"
 #include "gen/again_font.h"   /* TeX Gyre Heros Bold, plain and stamped (tools/gen_again_font.py) */
+/* the groove's notes out (engine/groove.h), over USB and Bluetooth, when NOTES OUT is on (app.c below) */
+static void gr_out(uint32_t ch, uint32_t st, uint32_t d1, uint32_t d2);
+#define GR_NOTE_OUT(ch, note, vel) gr_out((ch), (vel) ? 0x90u : 0x80u, (note), (vel))
+#define GR_CC_OUT(ch, cc, val) gr_out((ch), 0xB0u, (cc), (val))
 #include "core.c"             /* the sound, apart from the FM-1 (shared with FM-1 Again VIBE) */
+static void gr_out(uint32_t ch, uint32_t st, uint32_t d1, uint32_t d2)   /* (the audio interrupt: the render may send) */
+{
+    if (!set.p[PA_NOTESOUT])
+        return;
+    plat_midi_send((st >> 4) | (st | ch) << 8 | (d1 & 127u) << 16 | (d2 & 127u) << 24, TO_USB | TO_BLE);
+}
 #include "wave.h"
 #include "saver.h"
 #include "boot.h"
@@ -164,7 +174,7 @@ static const struct {
     [PG_SETUP] = {"Setup", 0, {PA_KEY, PA_PADS, PA_KEYS_LV, PA_VOX_LV}, PA_SAVER},
     [PG_TAPE] = {"Tape", 0, {PA_TWOW, PA_TSAT, PA_TTONE, PA_THISS}, PA_TAPE},
     [PG_MIX] = {"Mix", 0, {PA_KICK, PA_HATS, PA_CLAP, PA_RISE_LV}, PA_PLAYMODE},
-    [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_TEMPO, PA_SWING}, PA_SYNC},
+    [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_NOTESOUT, PA_TEMPO}, PA_SYNC},
 };
 static const uint8_t PG_BUTTON[NPG] = {B_HOME, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_ENV, B_ENV, B_LFO, B_FX, B_FX, B_GLO, B_GLO,
                                        B_GLO, B_GLO};   /* (the same button again: the next of its group) */
@@ -1124,6 +1134,15 @@ int32_t app_param_set(uint32_t i, int32_t v)
         return 0;
     param_set(i, v - pa_off(i));
     return set.p[i] + pa_off(i);
+}
+
+/* the mirror lost a part of the screen (APP_REDRAW): all of it again at the next frame, whatever is up */
+void app_redraw(void)
+{
+    ui.full = 1;
+    ui.redraw = ui.redraw_row = ui.redraw_title = 1;
+    bt.force = 1;
+    sv.t -= sv.ms;                               /* (the screensaver: its frame now) */
 }
 
 /* backup and restore (fm1.toml backup = true) */

@@ -46,6 +46,8 @@ int app_file_write(uint32_t i, uint32_t off, const uint8_t *src, uint32_t n);
 int app_file_commit(uint32_t i, uint32_t size, uint32_t crc);
 int app_file_delete(uint32_t i);
 void app_file_changed(uint32_t obj);     /* the computer wrote obj: load it again */
+#define APP_REDRAW                       /* the mirror lost a part: everything drawn again (app.c) */
+void app_redraw(void);
 #define APP_PARAMS                       /* and every parameter, live (the editor page; app.c app_param) */
 int app_param(uint32_t i, plat_param_t *p);
 const char *app_param_group(uint32_t g);

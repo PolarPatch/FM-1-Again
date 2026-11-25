@@ -94,7 +94,7 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 | SETUP (GLO) | SAVER: the screensaver ON or OFF | KEY | BLACK: PADS or NOTES | KEYS level | VOICE level (VOX and CHOP) |
 | TAPE (GLO again) | the tape: CLEAN, WARM, CASSETTE, WORN, MEMORY | WOW | WARMTH (saturation) | DULL | HISS |
 | MIX (GLO a third time) | PLAY | KICK | HATS | CLAP | RISE |
-| MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | TEMPO | SWING |
+| MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | NOTES OUT: ON or OFF | TEMPO |
 
 **The grooves:** HOUSE, 2-STEP, GARAGE 4X4, SHUFFLE, HALFTIME, BROKEN, MINIMAL, KICK ONLY. Each brings its own swing,
 and some of their hits come only half the time or every other bar, so a groove never repeats quite the same. VARY
@@ -196,6 +196,10 @@ keys play. Over USB the FM-1 is also an audio interface: a computer can record i
 Bluetooth) leads: FM-1 Again plays at its tempo, held on its beat, and START, CONTINUE and STOP start and stop the
 groove. When the clock stops coming, your own TEMPO is back. INTERNAL ignores it. CLOCK OUT sends FM-1 Again's own
 tempo as a clock to the computer over USB, with START and STOP, while no clock leads.
+
+**NOTES OUT** (on by default) sends what the groove plays as MIDI notes, over USB and Bluetooth: the drums on channel
+2 (General MIDI drum notes), the chords on channel 4, RISE on channel 5; the keys stay on channel 1. STOP sends all
+notes off on those channels. Turn it off when the FM-1 is only a controller.
 
 ## 9. The screen reader
 

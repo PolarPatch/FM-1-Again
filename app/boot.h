@@ -40,6 +40,7 @@ static struct {
     uint32_t t0, at, rnd, k, pk, ln;            /* since; the last frame; the dice; the title's light (0 .. 64);
                                                  * p0larpatch's (0 .. 8); the lines' length */
     int8_t tear[2][16];                         /* the storm: each word's 2 px bands, shifted */
+    uint8_t force;                              /* (everything drawn again at the next frame: the mirror asked) */
     struct { int16_t top, bot; int8_t dx; } g[BT_NG];   /* each ghost now: title rows top .. bot (none: top >= bot) */
 } bt;
 
@@ -171,6 +172,15 @@ static int boot_frame(uint32_t now)
     if (now - bt.at < BOOT_FRAME_MS)
         return 1;
     bt.at = now;
+    if (bt.force) {                              /* (the mirror asked for all of it) */
+        bt.force = 0;
+        lcd_fill(0, 0, 240, 240, C_BLACK);
+        bt_state(now - bt.t0);
+        bt_draw_title();
+        bt_draw_name();
+        bt_draw_lines();
+        return 1;
+    }
     if (bt_state(now - bt.t0) || bt.k != k)
         bt_draw_title();
     if (bt.pk != pk)

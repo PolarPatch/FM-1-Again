@@ -48,9 +48,10 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 
 ## 3. The screen
 
-- **The header.** The big first line names the page. On HOME it shows the bar and beat while playing, "Drop in 3"
-  during a build, and "Drop!" when the drop lands. The second line shows the page's choice (on HOME, the tempo). For
-  a moment after you turn something, it shows the value you just set instead.
+- **The header.** The big first line names the page. On HOME it names the groove while stopped, and shows the bar and
+  beat while playing, "Drop in 3" during a build, and "Drop!" when the drop lands. The second line shows the page's
+  choice; on HOME, the chord the groove plays now (Am9, Fmaj9 ...), or the key when CHORDS is off. For a moment after
+  you turn something, it shows the value you just set instead. (The tempo is TEMPO, K4 on HOME.)
 - **The waveform.** It shows the last 16 bars of the sound, left channel over right: the peaks in dark blue, the
   loudness (RMS) in lighter blue, each beat ticked along the edges and each bar's tick longer. The bar at its top names the groove, the tempo, the key and what the keys play on HOME (or a tip, until you have
   done what it says); on the other pages it shows the pages of that button as tabs, the one you are on inverted. On

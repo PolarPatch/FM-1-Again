@@ -23,6 +23,7 @@ static void gr_out(uint32_t ch, uint32_t st, uint32_t d1, uint32_t d2)   /* (the
     plat_midi_send((st >> 4) | (st | ch) << 8 | (d1 & 127u) << 16 | (d2 & 127u) << 24, TO_USB | TO_BLE);
 }
 #include "wave.h"
+static uint32_t redraw_last;                     /* (the mirror's last whole screen, app_redraw; 0: the next at once) */
 #include "saver.h"
 #include "boot.h"
 
@@ -526,6 +527,7 @@ static void input(void)
             any |= plat_enc((int)k) != 0;
         if (any) {
             sv.on = 0;
+            redraw_last = 0;                     /* (the mirror: the film's leftovers mended at its next ask) */
             sv.touch = plat_ms();
             ui.full = 1;
             ui.keys = keys;                      /* (what is held now plays nothing; let go, nothing either) */
@@ -695,6 +697,23 @@ static void title_case(const char *s, char *t)
     t[i] = 0;
 }
 
+/* HOME's second line: the groove's chord now as a name ("Am9"; stopped: its first), or the key when it plays none */
+static void chord_now(char *t)
+{
+    static const char *const SUF[NCH] = {"", "m7", "maj7", "m9", "maj9", "sus2", "add9", ""};
+    t[0] = 0;
+    if (!set.p[PA_PROG]) {
+        text_cat(t, "Key ");
+        text_cat(t, KEY_NAME[set.p[PA_KEY]]);
+        return;
+    }
+    {
+        const uint8_t *c = GR_PROG[set.p[PA_PROG]][ck.run ? (ck.step >> 5) & 3u : 0u];
+        text_cat(t, KEY_NAME[(set.p[PA_KEY] + c[0]) % 12u]);
+        text_cat(t, SUF[c[1] % NCH]);
+    }
+}
+
 static void draw_header(void)
 {
     char t[32], n[24];
@@ -740,16 +759,17 @@ static void draw_header(void)
         int_text((int32_t)(step % 16u) / 4 + 1, n);
         text_cat(t, n);
         poster_text(8, 2, t, 0);
-    } else
-        poster_text(8, 2, PG[PG_HOME].title, PG[PG_HOME].stamp);
+    } else {                                     /* stopped: the groove's name */
+        title_case(PAT_NAME[set.p[PA_PAT]], t);
+        poster_text(8, 2, t, 0);
+    }
     /* line 2: a message for a moment; else the page's choice (HOME: the tempo) */
     if (plat_ms() < ui.msg_until) {
         int32_t x = cv_text(8, 42, &AG_M, ui.msg[0], C_WHITE);
         cv_text(x + 8, 42, &AG_M, ui.msg[1], C_WHITE);
-    } else if (set.page == PG_HOME) {
-        int_text((int32_t)(ck.bpm + 0.5f), t);     /* (TEMPO UP: the tempo now) */
-        text_cat(t, " BPM");
-        poster_text(8, 36, t, 4);
+    } else if (set.page == PG_HOME) {            /* the chord now (stopped: the first), or the key */
+        chord_now(t);
+        poster_text(8, 36, t, -1);
     } else {
         char w[32];
         uint32_t pr = PG[set.page].preset;
@@ -1145,11 +1165,10 @@ int32_t app_param_set(uint32_t i, int32_t v)
 #define APP_REDRAW_MS 2000u
 void app_redraw(void)
 {
-    static uint32_t last;
     uint32_t now = plat_ms();
-    if (last && now - last < APP_REDRAW_MS)
+    if (redraw_last && now - redraw_last < APP_REDRAW_MS)
         return;
-    last = now ? now : 1u;
+    redraw_last = now ? now : 1u;
     ui.full = 1;
     ui.redraw = ui.redraw_row = ui.redraw_title = 1;
     bt.force = 1;

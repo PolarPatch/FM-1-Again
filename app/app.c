@@ -126,6 +126,8 @@ static void midi_in(void)                    /* audio interrupt: the packets tha
             midi_last_port = (uint32_t)port;
             midi_count++;
         }
+        if (st < 0xF0u && set.p[PA_MIDICH] && (st & 15u) != set.p[PA_MIDICH] - 1u)
+            continue;                            /* (CHANNEL: another channel's message) */
         if ((st & 0xF0u) == 0xB0u)              /* the mod wheel, volume, the pedal, all notes off */
             mb_cc(d1, d2);
         else if ((st & 0xF0u) == 0xE0u)         /* pitch bend */
@@ -179,7 +181,7 @@ static const struct {
     [PG_SETUP] = {"Setup", 0, {PA_KEY, PA_PADS, PA_KEYS_LV, PA_VOX_LV}, PA_SAVER},
     [PG_TAPE] = {"Tape", 0, {PA_TWOW, PA_TSAT, PA_TTONE, PA_THISS}, PA_TAPE},
     [PG_MIX] = {"Mix", 0, {PA_KICK, PA_HATS, PA_CLAP, PA_RISE_LV}, PA_PLAYMODE},
-    [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_NOTESOUT, PA_TEMPO}, PA_SYNC},
+    [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_NOTESOUT, PA_MIDICH}, PA_SYNC},
 };
 static const uint8_t PG_BUTTON[NPG] = {B_HOME, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_ENV, B_ENV, B_LFO, B_FX, B_FX, B_GLO, B_GLO,
                                        B_GLO, B_GLO};   /* (the same button again: the next of its group) */
@@ -519,6 +521,8 @@ static void play_toggle(void)
     }
 }
 
+static uint32_t key_ch(void) { return set.p[PA_MIDICH] ? set.p[PA_MIDICH] - 1u : 0u; }   /* the keys' channel out */
+
 static void input(void)
 {
     uint32_t keys, btn = plat_buttons(), k, pg;
@@ -569,14 +573,14 @@ static void input(void)
             ui.prs[k] = 0;
             ui.last_key = (int32_t)k;
             play_note(note, v, 1, 0);
-            plat_midi_send(0x09u | 0x90u << 8 | (uint32_t)note << 16 | v << 24, TO_USB | TO_BLE);
+            plat_midi_send(0x09u | (0x90u | key_ch()) << 8 | (uint32_t)note << 16 | v << 24, TO_USB | TO_BLE);
         } else if (!(keys & bit) && (ui.keys & bit)) {
             ui.prs[k] = 0;
             play_note(note, 0, 0, 0);
-            plat_midi_send(0x08u | 0x80u << 8 | (uint32_t)note << 16, TO_USB | TO_BLE);
+            plat_midi_send(0x08u | (0x80u | key_ch()) << 8 | (uint32_t)note << 16, TO_USB | TO_BLE);
         } else if ((keys & bit) && touch_pressure(k) != ui.prs[k]) {   /* pressure: poly aftertouch */
             ui.prs[k] = touch_pressure(k);
-            plat_midi_send(0x0Au | 0xA0u << 8 | (uint32_t)note << 16 | (uint32_t)ui.prs[k] << 24, TO_USB | TO_BLE);
+            plat_midi_send(0x0Au | (0xA0u | key_ch()) << 8 | (uint32_t)note << 16 | (uint32_t)ui.prs[k] << 24, TO_USB | TO_BLE);
         }
     }
     for (k = 0; k < NB; k++) {               /* a button pressed */

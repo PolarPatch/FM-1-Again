@@ -95,7 +95,7 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 | SETUP (GLO) | SAVER: the screensaver ON or OFF | KEY | BLACK: PADS or NOTES | KEYS level | VOICE level (VOX and CHOP) |
 | TAPE (GLO again) | the tape: CLEAN, WARM, CASSETTE, WORN, MEMORY | WOW | WARMTH (saturation) | DULL | HISS |
 | MIX (GLO a third time) | PLAY | KICK | HATS | CLAP | RISE |
-| MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | NOTES OUT: ON or OFF | TEMPO |
+| MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | NOTES OUT: ON or OFF | CHANNEL: OMNI or 1-16 |
 
 **The grooves:** HOUSE, 2-STEP, GARAGE 4X4, SHUFFLE, HALFTIME, BROKEN, MINIMAL, KICK ONLY. Each brings its own swing,
 and some of their hits come only half the time or every other bar, so a groove never repeats quite the same. VARY
@@ -204,7 +204,7 @@ notes off on those channels. Turn it off when the FM-1 is only a controller.
 
 **MIDI in.** Besides notes: pitch bend (two semitones up and down) and the mod wheel (a vibrato) bend KEYS, VOX and
 CHOP; a sustain pedal (CC 64) holds what you play until it lets go; CC 7 is the volume; CC 120 and 123 let every note
-go.
+go. CHANNEL takes MIDI in from one channel only (OMNI: every channel) and sends the keys on it (OMNI: channel 1).
 
 ## 9. The screen reader
 

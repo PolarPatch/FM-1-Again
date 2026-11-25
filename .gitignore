@@ -4,3 +4,8 @@ midi_out.txt
 screenscaver/
 CLAUDE.md
 video/
+
+# the demo video's tools: internal (the user, 2026-11-25)
+app/tools/make_demo_video.py
+app/tools/demo60.py
+app/tests/demo60.txt

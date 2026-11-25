@@ -9,8 +9,9 @@ short piece by itself; hold keys and play chopped voices over chords; a button l
   (copied from `base/template/`). Not a fork of GR!MM / Arctic Scream: Arctic Scream's modules (sampler, FM6, SPACE,
   TAPE, GRAIN, DRIVE, sequencer, ...) are brought in one at a time as they are needed. They are GPL-3.0, so the
   firmware as a whole is GPL-3.0; fm1-base's files stay MPL-2.0 file by file.
-- **Identity:** `id_prefix = "FM-1_13370"` (dev `FM-1_1337000`, releases `FM-1_13370XXYYZZ`). `FM-1_1337` itself is
-  reserved by FM1 DRUM OS in the hub's catalogue; checked against every `ident` there on 2026-11-24: no match.
+- **Identity:** `id_prefix = "FM-1_242"` (dev `FM-1_24200`, releases `FM-1_242XXYYZZ`; 1.0.3 is `FM-1_242010003`).
+  From 1.0.3 (2026-11-25): the hub's check refused 1.0's `FM-1_13370010000` (eleven digits, past 2^32; and the
+  `1337` family is FM1 DRUM OS's). No `ident` in the hub's catalogue starts with 242 (checked 2026-11-25).
   USB: "FM-1 Again" by "PolarPatch". Settings magic "AGN1".
 - **Versioning:** its own line from 1.0.
 - **Screen:** big bold type, black and white (the user, 2026-11-24: "primarily white and black"; loaf-breaker's

@@ -1,6 +1,7 @@
 # FM-1 Again's build settings (fm1-base tools/build.py)
 name = "AGAIN"                 # APP_NAME is in app.h; this names the build's files (again.fwsc)
-id_prefix = "FM-1_13370"       # package identity: dev FM-1_1337000, releases FM-1_13370XXYYZZ (FM-1_1337 is FM1 DRUM OS's)
+id_prefix = "FM-1_242"         # package identity: dev FM-1_24200, releases FM-1_242XXYYZZ ("AGA" on a phone's keys; free
+                                # in the hub's catalogue, 2026-11-25. 1.0 .. 1.0.2 were FM-1_13370XXYYZZ: too long for the hub)
 usb_manufacturer = "PolarPatch"
 usb_product = "FM-1 Again"
 title = "FM-1 Again"             # the name in firmware.json (else the manufacturer, PolarPatch)

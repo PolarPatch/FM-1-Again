@@ -75,6 +75,19 @@ short piece by itself; hold keys and play chopped voices over chords; a button l
 - Screensaver clips 01 and 02 (58 KB) when wanted: app/tools/again_saver.py, 66 KB room left.
 - 1.0.x: small, frequent releases (tag vX.Y.Z on main; then app/tools/make_again_site.py X.Y.Z --publish).
 
+## Since 1.0.1 (2026-11-25), local, not pushed (the user waits for more fixes before v1.0.2)
+- The groove's notes out (NOTES OUT: drums ch 10, chords 4, RISE 5); APP_REDRAW for the mirror, no clear (no
+  flicker), at most every 2 s (no flood), at once after waking from the screensaver; HOME's header: the groove or the
+  bar, then the chord now (Am9, Fmaj9); the reader: HOME in WHERE, PLAYING last, FILTER LP50 / HP33; KEYS faster
+  (the tremolo once a frame, the tine's sine skipped when died); the MIDI basics (bend, mod wheel, sustain, CC 7,
+  all notes off: engine/midi.h). 12 host tests pass. Flashed on the pink FM-1 up to the header change.
+- The local tag v1.0.2 points at the notes commit: move it to the newest commit before pushing.
+- RAM .data+.bss is 87 of 96 KB now: watch it.
+- Agreed with FM-1 Live (its session): its reader parses FM-1 Again's WHERE and knob turns; key0 from the mirror's
+  input report and the ch-1 note (no PANEL OUT needed now; it would give key0 at connect: only if the user wants).
+- SMK-37: FM-1 Again does not build on fm1-base's smk37-inhouse branch (no companion files / parameters there):
+  waits for the board in fm1-base main (see FM-1-Again-SMK-37's DEVELOPER.md).
+
 ## Night of 2026-11-24/25 (the user asleep; full permissions for VIBE and SMK-37 development)
 - FM-1 Again: the boot screen (pushed, not flashed); app/core.c split (audio identical); MIDI clock in/out and the
   MIDI page (host-tested: a 119 BPM master followed, its beat held; not on the device yet); film.h shared.

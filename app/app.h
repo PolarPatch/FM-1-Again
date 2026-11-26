@@ -16,13 +16,13 @@ int again_ble_off(void);
 
 /* the store: the app's objects, the panel calibration (the platform's) and Bluetooth's address and pairing among
  * them, and their flash offsets */
-enum { OBJ_SETTINGS, OBJ_PANEL, OBJ_BLE, OBJ_NOBJ };
-#define APP_STORE_MAP {0xFC000u, 0xDC000u, 0xDE000u}
+enum { OBJ_SETTINGS, OBJ_PANEL, OBJ_BLE, OBJ_WIFI, OBJ_NOBJ };   /* OBJ_WIFI: the networks kept, the mode (fm1-base's) */
+#define APP_STORE_MAP {0xFC000u, 0xDC000u, 0xDE000u, 0xDA000u}
 
-/* the resource region (fm1.toml resources): the screensaver's film (saver.h), the data area 0x97000 .. 0xDBFFF, up to
- * the store's pairs (CHOP's sample is in XDATA1) */
+/* the resource region (fm1.toml resources): the screensaver's film (saver.h), the data area 0x97000 .. 0xD9FFF, up to
+ * the store's pairs (the Wi-Fi's from 1.1 at 0xDA000; CHOP's sample is in XDATA1). The film is 53 sectors */
 #define APP_RES_BASE 0x97000u
-#define APP_RES_SECTORS 69u
+#define APP_RES_SECTORS 67u
 
 /* backup and restore over USB (fm1.toml backup = true; the resource region's transfer is the restore's): the settings */
 #define APP_BACKUP_OBJS {OBJ_SETTINGS}

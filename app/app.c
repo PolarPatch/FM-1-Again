@@ -164,7 +164,7 @@ void app_panic(void) { core_panic(); }
 
 /* the pages: their names, their four knobs, PRESET's value */
 enum { PG_HOME, PG_GROOVE, PG_RISE, PG_BUILD, PG_KEYS, PG_VOX, PG_CHOP, PG_PUMP, PG_SPACE, PG_ECHO, PG_SETUP, PG_TAPE,
-       PG_MIX, PG_MIDI, NPG };
+       PG_MIX, PG_MIDI, PG_LINK, NPG };
 static const struct {
     const char *title;                           /* the header's big word, as the posters set it */
     int8_t stamp;                                /* its stamped letter */
@@ -184,9 +184,10 @@ static const struct {
     [PG_TAPE] = {"Tape", 0, {PA_TWOW, PA_TSAT, PA_TTONE, PA_THISS}, PA_TAPE},
     [PG_MIX] = {"Mix", 0, {PA_KICK, PA_HATS, PA_CLAP, PA_RISE_LV}, PA_PLAYMODE},
     [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_NOTESOUT, PA_MIDICH}, PA_SYNC},
+    [PG_LINK] = {"Link", 0, {PA_WIFI, PA_LINK, PA_TEMPO, PA_SYNC}, PA_LINK},   /* (its second line: net.h lk_status) */
 };
 static const uint8_t PG_BUTTON[NPG] = {B_HOME, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_ENV, B_ENV, B_LFO, B_FX, B_FX, B_GLO, B_GLO,
-                                       B_GLO, B_GLO};   /* (the same button again: the next of its group) */
+                                       B_GLO, B_GLO, B_GLO};   /* (the same button again: the next of its group) */
 
 /* the tutor's tips (draw_title), in order: each gone once done (set.tips) */
 enum { TIP_PLAY, TIP_BUILD, TIP_ALGO, TIP_PADS, TIP_PAGES, TIP_SAVE, NTIP };
@@ -480,6 +481,8 @@ static uint32_t chop_cur(void)
 }
 
 /* parameter i to v (0 .. its top): what goes with it, the engine, the screen and a screen reader */
+#include "net.h"                         /* Wi-Fi and Ableton Link */
+
 static void param_set(uint32_t i, int32_t v)
 {
     char t[24];
@@ -499,6 +502,10 @@ static void param_set(uint32_t i, int32_t v)
         set.crev = v ? set.crev | 1u << chop_cur() : set.crev & ~(1u << chop_cur());
     set_dirty = 1;
     apply();
+    if (i == PA_WIFI || i == PA_LINK)
+        net_apply();
+    else if (i == PA_TEMPO)
+        lk_tempo();                              /* (Link: the session's tempo too) */
     value_text(i, t);
     if (i == PA_CREV) {                          /* "SLICE 3" "REVERSE" */
         char nm[12] = "SLICE ";
@@ -516,7 +523,10 @@ static void play_toggle(void)
     if (ck.run) {
         ck.run = 0;
         want_stop = 1;
+        lk_play(0);
         app_say("STOPPED", "");
+    } else if (lk_play(1)) {                 /* (Link with peers: at the next bar line, or not after all) */
+        app_say(lk.arm_ub >= 0 ? "NEXT BAR" : "NOT STARTED", "");
     } else {
         ck_start();
         app_say("PLAYING", PAT_NAME[set.p[PA_PAT]]);
@@ -783,6 +793,10 @@ static void draw_header(void)
     } else if (set.page == PG_HOME) {            /* the chord now (stopped: the first), or the key */
         chord_now(t);
         poster_text(8, 36, t, -1);
+    } else if (set.page == PG_LINK) {            /* how far the Wi-Fi got, the session (net.h) */
+        char w[40];
+        lk_status(w);
+        poster_text(8, 36, w, -1);
     } else {
         char w[32];
         uint32_t pr = PG[set.page].preset;
@@ -871,6 +885,8 @@ static void draw_title(void)
         t[0] = 0;
         if (set.page == PG_CHOP) {               /* on the right: CHOP its sample, SETUP the load, else the groove */
             title_case(ch_name, t);
+        } else if (set.page == PG_LINK) {
+            lk_where(t);
         } else if (set.page == PG_SETUP) {
             text_cat(t, "CPU ");
             int_text((int32_t)plat_cpu_pct(), n);
@@ -928,6 +944,7 @@ void app_ui_init(void)
     sv_init();                               /* the screensaver's film, if the resources hold it */
     sv.touch = plat_ms();
     boot_start(plat_ms());                   /* the boot screen: FM-1 AGAIN in the storm (boot.h) */
+    net_apply();                             /* WI-FI and LINK as kept */
     ui.redraw = ui.redraw_row = ui.redraw_title = 1;
 }
 
@@ -937,6 +954,7 @@ void app_frame(void)
     uint32_t i, now = plat_ms(), lit = 0;
     input();
     sy_check();
+    lk_frame();                                  /* Ableton Link: the session's tempo, beat and start (net.h) */
     speak();
     tapefx_poll();                               /* TAPE's saturation curve, made here when it changes */
     if (FM1B_BLE_CENTRAL) {                  /* looking: a device found is named at once (REC connects to it) */
@@ -995,6 +1013,13 @@ void app_frame(void)
     {                                            /* the CPU short (the audio past 85 % of its budget): KEYS plays fewer voices */
         uint32_t cpu = plat_cpu_pct();
         kp.nv = cpu > 85u ? 6u : cpu < 70u ? KP_NV : kp.nv;
+    }
+    if (set.page == PG_LINK && set.p[PA_WIFI] == 2u) {   /* MODE AP: its name and password by turns */
+        static uint32_t ap_at;
+        if (now - ap_at >= 1000u) {
+            ap_at = now;
+            ui.redraw = ui.redraw_title = 1;
+        }
     }
     if (set.page == PG_SETUP) {                  /* the load, once a second */
         static uint32_t cpu_at;

@@ -46,6 +46,7 @@ enum {
     PA_SYNC, PA_CLKOUT,                                      /* MIDI clock (1.0.1) */
     PA_NOTESOUT,                                             /* the groove's notes out (1.0.2) */
     PA_MIDICH,                                               /* the MIDI channel (1.0.2) */
+    PA_WIFI, PA_LINK,                                        /* Wi-Fi and Ableton Link (1.1) */
     NPA
 };
 enum { FMT_PCT, FMT_BPM, FMT_LIST, FMT_MS, FMT_KEY, FMT_BARS, FMT_FILTER, FMT_SIZE, FMT_RAW, FMT_SEMI, FMT_ONE, FMT_UP };
@@ -64,6 +65,7 @@ static const char *const SAVER_NAME[2] = {"OFF", "ON"};
 static const char *const CREV_NAME[2] = {"FORWARD", "REVERSE"};
 static const char *const SYNC_NAME[2] = {"AUTO", "INTERNAL"};
 static const char *const ONOFF_NAME[2] = {"OFF", "ON"};
+static const char *const WIFI_NAME[3] = {"OFF", "AUTO", "AP"};   /* (net.h: WIFI_MODE_OFF, _AUTO, _AP) */
 static const char *const MIDICH_NAME[17] = {"OMNI", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13",
                                            "14", "15", "16"};
 /* the black keys as pads (loaf-breaker's way): PERFORM's tricks while held, F#3 .. F#5, and their names on the strip */
@@ -138,6 +140,8 @@ static const param_t PA[NPA] = {
     [PA_CLKOUT] = {"CLOCK OUT", 1, 0, FMT_LIST, ONOFF_NAME},   /* MIDI clock, START and STOP out over USB */
     [PA_NOTESOUT] = {"NOTES OUT", 1, 1, FMT_LIST, ONOFF_NAME},   /* the groove's notes out: drums 10, chords 4, RISE 5 */
     [PA_MIDICH] = {"CHANNEL", 16, 0, FMT_LIST, MIDICH_NAME},   /* in: OMNI or one; out: the keys' (OMNI: 1) */
+    [PA_WIFI] = {"WI-FI", 2, 0, FMT_LIST, WIFI_NAME},     /* AUTO: the networks kept; AP: the FM-1 is the network */
+    [PA_LINK] = {"LINK", 1, 1, FMT_LIST, ONOFF_NAME},     /* Ableton Link whenever there is a network */
 };
 
 /* what the keys play (ALGORITHM) */
@@ -169,6 +173,8 @@ static uint8_t set_dirty;                /* changed since the last save: SAVE is
 /* the parameters into the engine (the main loop; the engine reads them a block at a time) */
 static float pa01(uint32_t i) { return (float)set.p[i] / (float)PA[i].top; }
 static volatile float bpm_base = 124.0f;     /* TEMPO (the clock adds the build's TEMPO UP to it) */
+static volatile float lk_nudge;              /* (net.h) frames the clock's step moves, taken by the render */
+static volatile uint8_t lk_lead;             /* (net.h) Link leads the tempo: a session with peers */
 static void apply(void)
 {
     bpm_base = 80.0f + (float)set.p[PA_TEMPO];
@@ -362,7 +368,11 @@ static void core_render(uint32_t n, float *p0, float *p1)
     float pos0, pos1, hp_fc, lp_fc, flt = (float)set.p[PA_FILTER], kick_to, drums_to;
     if (n > APP_BLOCK)
         n = APP_BLOCK;
-    ck.bpm = bpm_base + gr.bpm_add;              /* (BUILD's TEMPO UP) */
+    if (lk_nudge != 0.0f) {                      /* (Link: the clock pulled onto the session's beat, net.h) */
+        ck.left += lk_nudge;
+        lk_nudge = 0.0f;
+    }
+    ck.bpm = bpm_base + (lk_lead ? 0.0f : gr.bpm_add);   /* (BUILD's TEMPO UP; not while Link leads: one tempo) */
     if (ch_swap) {                               /* a new sample: every voice of the old one off first */
         for (i = 0; i < CH_NV; i++)
             ch.v[i].note = -1;

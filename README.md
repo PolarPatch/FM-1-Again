@@ -26,6 +26,8 @@ fall. A sister to [Arctic Scream p0larpatch](https://github.com/PolarPatch/Arcti
   screensaver.
 - **Ableton Link over Wi-Fi:** in time with Link apps on a phone or a computer (tempo, beat, start and stop), on
   your network or on the FM-1's own.
+- **The notes to a phone:** what you play reaches apps such as Ableton Note over Bluetooth MIDI or over Wi-Fi
+  (a phone's or a computer's network MIDI session), whichever you choose, or both.
 - USB-MIDI, Bluetooth MIDI (and Bluetooth MIDI devices), USB audio, a screen reader, the settings kept through
   updates, backup, and an editor page for every value and CHOP's sample.
 
@@ -35,7 +37,7 @@ In Chrome or Edge, with the FM-1 on USB: [the installer](https://polarpatch.gith
 also put M-VAVE's own firmware back. Or from a terminal, with the package from the releases:
 
     pip install mido python-rtmidi
-    python3 base/tools/fm1_install.py again-1.0.6.fwsc
+    python3 base/tools/fm1_install.py again-1.0.7.fwsc
 
 Unofficial firmware, not made or endorsed by M-VAVE: install at your own risk. Stuck? The Rescue page on the
 [FM-1 Firmware Hub](https://thefirmwarehub.com/) brings it back.

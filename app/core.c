@@ -46,7 +46,8 @@ enum {
     PA_SYNC, PA_CLKOUT,                                      /* MIDI clock (1.0.1) */
     PA_NOTESOUT,                                             /* the groove's notes out (1.0.2) */
     PA_MIDICH,                                               /* the MIDI channel (1.0.2) */
-    PA_WIFI, PA_LINK,                                        /* Wi-Fi and Ableton Link (1.1) */
+    PA_WIFI, PA_LINK,                                        /* Wi-Fi and Ableton Link (1.0.6) */
+    PA_NETMIDI,                                              /* MIDI over Wi-Fi (1.0.7) */
     NPA
 };
 enum { FMT_PCT, FMT_BPM, FMT_LIST, FMT_MS, FMT_KEY, FMT_BARS, FMT_FILTER, FMT_SIZE, FMT_RAW, FMT_SEMI, FMT_ONE, FMT_UP };
@@ -142,6 +143,7 @@ static const param_t PA[NPA] = {
     [PA_MIDICH] = {"CHANNEL", 16, 0, FMT_LIST, MIDICH_NAME},   /* in: OMNI or one; out: the keys' (OMNI: 1) */
     [PA_WIFI] = {"WI-FI", 2, 0, FMT_LIST, WIFI_NAME},     /* AUTO: the networks kept; AP: the FM-1 is the network */
     [PA_LINK] = {"LINK", 1, 1, FMT_LIST, ONOFF_NAME},     /* Ableton Link whenever there is a network */
+    [PA_NETMIDI] = {"WI-FI MIDI", 1, 1, FMT_LIST, ONOFF_NAME},   /* RTP-MIDI: a phone's or a computer's network session */
 };
 
 /* what the keys play (ALGORITHM) */

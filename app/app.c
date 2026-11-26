@@ -13,6 +13,8 @@
 #include "gen/again_font.h"   /* TeX Gyre Heros Bold, plain and stamped (tools/gen_again_font.py) */
 /* the groove's notes out (engine/groove.h), over USB and Bluetooth, when NOTES OUT is on (app.c below) */
 static void gr_out(uint32_t ch, uint32_t st, uint32_t d1, uint32_t d2);
+static void nm_put(uint32_t pkt, int render);   /* MIDI over Wi-Fi (net.h) */
+static int nm_get(uint32_t *pkt);
 #define GR_NOTE_OUT(ch, note, vel) gr_out((ch), (vel) ? 0x90u : 0x80u, (note), (vel))
 #define GR_CC_OUT(ch, cc, val) gr_out((ch), 0xB0u, (cc), (val))
 #include "core.c"             /* the sound, apart from the FM-1 (shared with FM-1 Again VIBE) */
@@ -21,6 +23,7 @@ static void gr_out(uint32_t ch, uint32_t st, uint32_t d1, uint32_t d2)   /* (the
     if (!set.p[PA_NOTESOUT])
         return;
     plat_midi_send((st >> 4) | (st | ch) << 8 | (d1 & 127u) << 16 | (d2 & 127u) << 24, TO_USB | TO_BLE);
+    nm_put((st >> 4) | (st | ch) << 8 | (d1 & 127u) << 16 | (d2 & 127u) << 24, 1);
 }
 #include "wave.h"
 #define APP_REDRAW_FAST_FOR 3000u
@@ -104,41 +107,47 @@ static void sy_out(uint32_t n)                   /* (the render) CLOCK OUT for a
         plat_midi_send(0x0Fu | 0xF8u << 8, TO_USB);
 }
 
+static void midi_msg(uint32_t pkt, int port)  /* audio interrupt: a packet that came in */
+{
+    uint32_t st = (pkt >> 8) & 0xFFu, d1 = (pkt >> 16) & 0x7Fu, d2 = pkt >> 24;
+    if (set.p[PA_SYNC] == 0u && st >= 0xF8u && st <= 0xFCu) {   /* the clock and the transport (SYNC AUTO) */
+        if (st == 0xF8u)
+            sy_tick(sy_stamp());
+        else if (st == 0xFAu) {
+            sy.ticks = 0;
+            ck_start();
+        } else if (st == 0xFBu)
+            ck.run = 1;
+        else if (st == 0xFCu && ck.run) {
+            ck.run = 0;
+            gr_stop();
+        }
+    }
+    if (st != 0xF8u && st != 0xFEu) {    /* (clock and active sensing would flood the screen) */
+        midi_last = pkt;
+        midi_last_port = (uint32_t)port;
+        midi_count++;
+    }
+    if (st < 0xF0u && set.p[PA_MIDICH] && (st & 15u) != set.p[PA_MIDICH] - 1u)
+        return;                              /* (CHANNEL: another channel's message) */
+    if ((st & 0xF0u) == 0xB0u)              /* the mod wheel, volume, the pedal, all notes off */
+        mb_cc(d1, d2);
+    else if ((st & 0xF0u) == 0xE0u)         /* pitch bend */
+        mb_bend(d1 | (d2 & 0x7Fu) << 7);
+    else if ((st & 0xF0u) == 0x90u && d2)
+        play_note((int32_t)d1, d2, 1, 1);
+    else if ((st & 0xF0u) == 0x80u || (st & 0xF0u) == 0x90u)
+        play_note((int32_t)d1, 0, 0, 1);
+}
+
 static void midi_in(void)                    /* audio interrupt: the packets that came in */
 {
     uint32_t pkt;
     int port;
-    while (plat_midi_in(&pkt, &port)) {
-        uint32_t st = (pkt >> 8) & 0xFFu, d1 = (pkt >> 16) & 0x7Fu, d2 = pkt >> 24;
-        if (set.p[PA_SYNC] == 0u && st >= 0xF8u && st <= 0xFCu) {   /* the clock and the transport (SYNC AUTO) */
-            if (st == 0xF8u)
-                sy_tick(sy_stamp());
-            else if (st == 0xFAu) {
-                sy.ticks = 0;
-                ck_start();
-            } else if (st == 0xFBu)
-                ck.run = 1;
-            else if (st == 0xFCu && ck.run) {
-                ck.run = 0;
-                gr_stop();
-            }
-        }
-        if (st != 0xF8u && st != 0xFEu) {    /* (clock and active sensing would flood the screen) */
-            midi_last = pkt;
-            midi_last_port = (uint32_t)port;
-            midi_count++;
-        }
-        if (st < 0xF0u && set.p[PA_MIDICH] && (st & 15u) != set.p[PA_MIDICH] - 1u)
-            continue;                            /* (CHANNEL: another channel's message) */
-        if ((st & 0xF0u) == 0xB0u)              /* the mod wheel, volume, the pedal, all notes off */
-            mb_cc(d1, d2);
-        else if ((st & 0xF0u) == 0xE0u)         /* pitch bend */
-            mb_bend(d1 | (d2 & 0x7Fu) << 7);
-        else if ((st & 0xF0u) == 0x90u && d2)
-            play_note((int32_t)d1, d2, 1, 1);
-        else if ((st & 0xF0u) == 0x80u || (st & 0xF0u) == 0x90u)
-            play_note((int32_t)d1, 0, 0, 1);
-    }
+    while (plat_midi_in(&pkt, &port))
+        midi_msg(pkt, port);
+    while (nm_get(&pkt))                         /* (MIDI over Wi-Fi: shown as port 3) */
+        midi_msg(pkt, 3);
 }
 
 void app_render(int32_t *lr, uint32_t n, uint32_t master_q12)
@@ -184,7 +193,7 @@ static const struct {
     [PG_TAPE] = {"Tape", 0, {PA_TWOW, PA_TSAT, PA_TTONE, PA_THISS}, PA_TAPE},
     [PG_MIX] = {"Mix", 0, {PA_KICK, PA_HATS, PA_CLAP, PA_RISE_LV}, PA_PLAYMODE},
     [PG_MIDI] = {"Midi", 0, {PA_SYNC, PA_CLKOUT, PA_NOTESOUT, PA_MIDICH}, PA_SYNC},
-    [PG_LINK] = {"Link", 0, {PA_WIFI, PA_LINK, PA_TEMPO, PA_SYNC}, PA_LINK},   /* (its second line: net.h lk_status) */
+    [PG_LINK] = {"Link", 0, {PA_WIFI, PA_LINK, PA_TEMPO, PA_NETMIDI}, PA_LINK},   /* (its second line: net.h lk_status) */
 };
 static const uint8_t PG_BUTTON[NPG] = {B_HOME, B_SEQ, B_SEQ, B_SEQ, B_EDIT, B_ENV, B_ENV, B_LFO, B_FX, B_FX, B_GLO, B_GLO,
                                        B_GLO, B_GLO, B_GLO};   /* (the same button again: the next of its group) */
@@ -587,13 +596,16 @@ static void input(void)
             ui.last_key = (int32_t)k;
             play_note(note, v, 1, 0);
             plat_midi_send(0x09u | (0x90u | key_ch()) << 8 | (uint32_t)note << 16 | v << 24, TO_USB | TO_BLE);
+            nm_put(0x09u | (0x90u | key_ch()) << 8 | (uint32_t)note << 16 | v << 24, 0);
         } else if (!(keys & bit) && (ui.keys & bit)) {
             ui.prs[k] = 0;
             play_note(note, 0, 0, 0);
             plat_midi_send(0x08u | (0x80u | key_ch()) << 8 | (uint32_t)note << 16, TO_USB | TO_BLE);
+            nm_put(0x08u | (0x80u | key_ch()) << 8 | (uint32_t)note << 16, 0);
         } else if ((keys & bit) && touch_pressure(k) != ui.prs[k]) {   /* pressure: poly aftertouch */
             ui.prs[k] = touch_pressure(k);
             plat_midi_send(0x0Au | (0xA0u | key_ch()) << 8 | (uint32_t)note << 16 | (uint32_t)ui.prs[k] << 24, TO_USB | TO_BLE);
+            nm_put(0x0Au | (0xA0u | key_ch()) << 8 | (uint32_t)note << 16 | (uint32_t)ui.prs[k] << 24, 0);
         }
     }
     for (k = 0; k < NB; k++) {               /* a button pressed */
@@ -955,6 +967,7 @@ void app_frame(void)
     input();
     sy_check();
     lk_frame();                                  /* Ableton Link: the session's tempo, beat and start (net.h) */
+    nm_frame();                                  /* MIDI over Wi-Fi (net.h) */
     speak();
     tapefx_poll();                               /* TAPE's saturation curve, made here when it changes */
     if (FM1B_BLE_CENTRAL) {                  /* looking: a device found is named at once (REC connects to it) */

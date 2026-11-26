@@ -24,6 +24,8 @@ fall. A sister to [Arctic Scream p0larpatch](https://github.com/PolarPatch/Arcti
 - **PUMP** (sidechain), **SPACE**, **ECHO** (tape, ping-pong, reverse) and **TAPE**.
 - A black-and-white screen set like a tour poster, the sound drawn as an audio editor draws it, and a dithered
   screensaver.
+- **Ableton Link over Wi-Fi:** in time with Link apps on a phone or a computer (tempo, beat, start and stop), on
+  your network or on the FM-1's own.
 - USB-MIDI, Bluetooth MIDI (and Bluetooth MIDI devices), USB audio, a screen reader, the settings kept through
   updates, backup, and an editor page for every value and CHOP's sample.
 
@@ -33,7 +35,7 @@ In Chrome or Edge, with the FM-1 on USB: [the installer](https://polarpatch.gith
 also put M-VAVE's own firmware back. Or from a terminal, with the package from the releases:
 
     pip install mido python-rtmidi
-    python3 base/tools/fm1_install.py again-1.0.5.fwsc
+    python3 base/tools/fm1_install.py again-1.0.6.fwsc
 
 Unofficial firmware, not made or endorsed by M-VAVE: install at your own risk. Stuck? The Rescue page on the
 [FM-1 Firmware Hub](https://thefirmwarehub.com/) brings it back.
@@ -68,7 +70,11 @@ and felucca-bsp, from [Felucca](https://github.com/hugelton/Felucca) by Leo Kuro
 SPACE, ECHO and TAPE come from Arctic Scream, which took them from Felucca and GR!MM. The pads, tabs, SONG and builds
 follow ideas of [loaf-breaker](https://github.com/FLEXOR-R/loaf-breaker) by FLEXOR, written anew.
 
-The firmware is GPL-3.0 ([LICENSE](LICENSE)); every part and its licence is in [LICENSING.md](LICENSING.md).
+Its Wi-Fi stack and Ableton Link (a C port of Ableton's Link library) are fm1-base's, by Henri David from
+[Optimist](https://github.com/w0ts/optimist). Ableton Link is a trademark of Ableton AG; FM-1 Again is not made or
+endorsed by Ableton.
+
+The firmware is GPL-3.0-only ([LICENSE](LICENSE)); every part and its licence is in [LICENSING.md](LICENSING.md).
 
 The look follows the posters of the USB002 tour, and the screensaver's film (`app/media/`) is footage from it, both
 from the creative files its team shared with the community; they are not under the GPL and are not this project's

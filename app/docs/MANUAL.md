@@ -96,6 +96,7 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 | TAPE (GLO again) | the tape: CLEAN, WARM, CASSETTE, WORN, MEMORY | WOW | WARMTH (saturation) | DULL | HISS |
 | MIX (GLO a third time) | PLAY | KICK | HATS | CLAP | RISE |
 | MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | NOTES OUT: ON or OFF | CHANNEL: OMNI or 1-16 |
+| LINK (GLO a fifth time) | LINK | WI-FI: OFF, AUTO or AP | LINK: ON or OFF | TEMPO | SYNC |
 
 **The grooves:** HOUSE, 2-STEP, GARAGE 4X4, SHUFFLE, HALFTIME, BROKEN, MINIMAL, KICK ONLY. Each brings its own swing,
 and some of their hits come only half the time or every other bar, so a groove never repeats quite the same. VARY
@@ -206,6 +207,21 @@ notes off on those channels. Turn it off when the FM-1 is only a controller.
 **MIDI in.** Besides notes: pitch bend (two semitones up and down) and the mod wheel (a vibrato) bend KEYS, VOX and
 CHOP; a sustain pedal (CC 64) holds what you play until it lets go; CC 7 is the volume; CC 120 and 123 let every note
 go. CHANNEL takes MIDI in from one channel only (OMNI: every channel) and sends the keys on it (OMNI: channel 1).
+
+**Ableton Link over Wi-Fi** (the LINK page). FM-1 Again plays in time with Link apps on a phone, a tablet or a
+computer (Ableton Note, Live and the many apps with Link), on the same network:
+
+- **WI-FI AP:** the FM-1 makes its own network. The page shows its name and password by turns; join it from the
+  phone, and the title bar counts who joined. The simplest way, anywhere.
+- **WI-FI AUTO:** the FM-1 joins a network it knows. Give it one over USB, once:
+  `python3 base/tools/fm1_remote.py wifi join "NETWORK" PASSWORD`. The title bar shows its address.
+- **LINK ON:** the page counts the peers in the session. With one or more (and no MIDI clock coming in, which leads
+  first), the session leads: its tempo is FM-1 Again's, the groove is held on its beat, and starting or stopping in
+  any app starts or stops the groove (starting, it waits for the next bar line). Turning TEMPO or pressing PLAY on the
+  FM-1 does the same to the session. Alone, the FM-1 gives the session its tempo.
+
+Link shares the tempo, the beat and start / stop, not sound or notes: each plays its own. (In Ableton Note: Link and
+Start Stop Sync are in its settings, the wheel at the top right.)
 
 ## 9. The screen reader
 

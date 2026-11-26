@@ -33,7 +33,7 @@ In Chrome or Edge, with the FM-1 on USB: [the installer](https://polarpatch.gith
 also put M-VAVE's own firmware back. Or from a terminal, with the package from the releases:
 
     pip install mido python-rtmidi
-    python3 base/tools/fm1_install.py again-1.0.4.fwsc
+    python3 base/tools/fm1_install.py again-1.0.5.fwsc
 
 Unofficial firmware, not made or endorsed by M-VAVE: install at your own risk. Stuck? The Rescue page on the
 [FM-1 Firmware Hub](https://thefirmwarehub.com/) brings it back.

@@ -23,7 +23,9 @@ static void gr_out(uint32_t ch, uint32_t st, uint32_t d1, uint32_t d2)   /* (the
     plat_midi_send((st >> 4) | (st | ch) << 8 | (d1 & 127u) << 16 | (d2 & 127u) << 24, TO_USB | TO_BLE);
 }
 #include "wave.h"
+#define APP_REDRAW_FAST_FOR 3000u
 static uint32_t redraw_last;                     /* (the mirror's last whole screen, app_redraw; 0: the next at once) */
+static uint32_t redraw_fast_until;               /* (the screensaver just gone: the mirror's mends come quickly until then) */
 #include "saver.h"
 #include "boot.h"
 
@@ -538,6 +540,7 @@ static void input(void)
         if (any) {
             sv.on = 0;
             redraw_last = 0;                     /* (the mirror: the film's leftovers mended at its next ask) */
+            redraw_fast_until = plat_ms() + APP_REDRAW_FAST_FOR;
             sv.touch = plat_ms();
             ui.full = 1;
             ui.keys = keys;                      /* (what is held now plays nothing; let go, nothing either) */
@@ -955,7 +958,9 @@ void app_frame(void)
         ui.full = 1;
         ui.redraw = ui.redraw_row = ui.redraw_title = 1;
     }
-    if (!sv.on && sv.p && set.p[PA_SAVER] && now - sv.touch >= SV_IDLE_MS) {
+    /* (signed: input() above set sv.touch to plat_ms(), which may be past this frame's now; unsigned, that came out
+     * as ~49 days untouched and the film started on any press, a frame at a time, between the page's) */
+    if (!sv.on && sv.p && set.p[PA_SAVER] && (int32_t)(now - sv.touch) >= (int32_t)SV_IDLE_MS) {
         sv.on = 1;                               /* untouched a minute: the film */
         sv.at = 0;
         sv.t = now - sv.ms;
@@ -1172,11 +1177,16 @@ int32_t app_param_set(uint32_t i, int32_t v)
 /* The mirror asks again every 50 ms while rows it could not send are dirty, and a whole screen fills its ring: while
  * the waveform runs that would ask, flood, drop and ask again for ever, the viewer never catching up. So the whole
  * screen at most every APP_REDRAW_MS; between them only what changes goes out, and the next one mends the rest */
+/* Waking from the screensaver, the ring is still full of the film: the page's first whole screen is mostly dropped,
+ * and at one mend every APP_REDRAW_MS its bands of film stayed in the viewer up to 2 s. For APP_REDRAW_FAST_FOR after
+ * the wake, a mend every APP_REDRAW_FAST_MS (each sends only the rows still wrong: mirror.c skips what the viewer has) */
 #define APP_REDRAW_MS 2000u
+#define APP_REDRAW_FAST_MS 100u
 void app_redraw(void)
 {
     uint32_t now = plat_ms();
-    if (redraw_last && now - redraw_last < APP_REDRAW_MS)
+    uint32_t gap = (int32_t)(redraw_fast_until - now) > 0 ? APP_REDRAW_FAST_MS : APP_REDRAW_MS;
+    if (redraw_last && now - redraw_last < gap)
         return;
     redraw_last = now ? now : 1u;
     ui.full = 1;

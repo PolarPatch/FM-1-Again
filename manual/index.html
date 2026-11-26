@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGAIN: FM-1 Again</title>
+<meta name="description" content="FM-1 Again for AGAIN, a firmware for the M-VAVE FM-1.">
+<style>
+/* paper and ink: warm white paper, ink-blue type, vermilion for what is played, mustard for asides; a shade of the
+   paper for code and callouts (CTL-1's; a firmware may restyle its site) */
+:root {
+  --paper: #fbf8f1; --sheet: #efe9dc; --rule: #ddd4c2; --ink: #1e2b5a; --muted: #5d6585;
+  --hot: #e5482e; --hot-t: #f8d3c9; --cool: #d9a21b; --cool-t: #f5e4b8;
+  --hot-ink: #c23a22;                                 /* the vermilion as text: 4.5:1 on the paper */
+  color-scheme: light;
+}
+body {
+  background: var(--paper); color: var(--ink); margin: 0;
+  font: 400 17px/1.6 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding-inline: 16px; padding-block: 32px 64px;
+}
+main { max-width: 46rem; margin: 0 auto; }
+.page > .site { max-width: 46rem; margin-inline: auto; }
+main:focus { outline: none; }
+h1, h2, h3 { font-family: inherit; text-wrap: balance; line-height: 1.2; }
+h1 { font-size: 2.2rem; font-weight: 700; margin: 0 0 .4rem; letter-spacing: .02em; }
+h2 { font-size: 1.3rem; font-weight: 700; margin: 3rem 0 .8rem; padding-top: .8rem; border-top: 2px solid var(--ink); }
+h2 .num { color: var(--hot); margin-right: .5em; font-variant-numeric: tabular-nums; }
+h3 { font-size: 1.1rem; font-weight: 700; margin: 2rem 0 .5rem; }
+p, li { max-width: 65ch; }
+p { margin: 0 0 1rem; }
+ul, ol { padding-left: 1.3rem; margin: 0 0 1rem; }
+li { margin: .2rem 0; }
+li::marker { color: var(--hot); }
+strong { font-weight: 700; }
+a { color: var(--ink); text-decoration-color: var(--hot); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { background: var(--hot-t); }
+:focus-visible { outline: 3px solid var(--hot-ink); outline-offset: 2px; }
+.skip { position: absolute; left: 16px; top: -100px; background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 0 0 6px 6px; z-index: 1; }
+.skip:focus { top: 0; }
+code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .86em; }
+code { background: var(--sheet); padding: .08em .35em; border-radius: 3px; }
+pre { background: var(--sheet); border-radius: 6px; padding: 14px 16px; overflow-x: auto; line-height: 1.45; margin: 0 0 1.2rem; }
+pre code { background: none; padding: 0; font-size: inherit; }
+hr { display: none; }
+.table { overflow-x: auto; margin: 0 0 1.3rem; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; vertical-align: top; padding: .45rem .7rem .45rem 0; border-bottom: 1px solid var(--rule); }
+th { font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .78rem; color: var(--muted); border-bottom: 2px solid var(--ink); }
+td:first-child { white-space: nowrap; }
+.lede { margin-bottom: 1.6rem; }
+.status { background: var(--sheet); border-radius: 6px; padding: 12px 16px; }
+.status p { margin: 0; }
+.site { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1.2rem; margin: 0 0 1.6rem; padding-bottom: .5rem; border-bottom: 2px solid var(--ink); }
+.site .home { font-size: 1.1rem; font-weight: 700; letter-spacing: .04em; color: var(--ink); text-decoration: none; }
+.site .home:hover { color: var(--hot-ink); background: none; }
+.site nav { margin-left: auto; display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: .92rem; }
+.site nav a { color: var(--ink); text-underline-offset: 3px; }
+.site nav a[aria-current] { text-decoration: none; color: var(--hot-ink); }
+a.home { color: inherit; text-decoration: none; }
+a.home:hover { background: none; color: var(--hot-ink); }
+main > a.home { display: inline-block; font-size: .9rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 .4rem; }
+.callout { border-left: 4px solid var(--cool); background: var(--cool-t); padding: 10px 16px; margin: 0 0 1.2rem; max-width: 65ch; border-radius: 0 6px 6px 0; }
+.callout p { margin: 0; }
+details { background: var(--sheet); border-radius: 6px; padding: 0 16px; margin: 0 0 1.2rem; }
+details > summary { cursor: pointer; padding: 10px 0; }
+details[open] > summary { margin-bottom: .4rem; }
+details > :last-child { margin-bottom: 1rem; }
+.swatch { display: inline-block; width: .7em; height: .7em; margin-right: .4em; vertical-align: .02em; }
+nav.contents ol { columns: 2 14rem; column-gap: 2rem; padding-left: 1.3rem; }
+.figs { display: flex; flex-wrap: wrap; gap: 20px; margin: .4rem 0 1.6rem; }
+figure { margin: 0; flex: 0 1 auto; }
+figure img { display: block; max-width: 100%; height: auto; }
+figure.shot img { width: 300px; image-rendering: pixelated; border-radius: 4px; box-shadow: 0 0 0 1px var(--rule); }
+figure.wide { flex-basis: 100%; }
+figure.wide img { width: 100%; }
+figcaption { color: var(--muted); font-size: .88rem; margin-top: .4rem; max-width: 300px; }
+figure.wide figcaption { max-width: none; }
+nav.contents li { break-inside: avoid; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<div class="page">
+<main id="content" tabindex="-1">
+<a class="home" href="../">AGAIN</a>
+<h1>FM-1 Again</h1>
+<p>FM-1 Again is a firmware for the M-VAVE FM-1, made for warm, emotional, rhythmic electronic music. Press PLAY and a groove starts with chords pumping over it. Play soft electric piano, sung syllables or a chopped recording on the keys, then press ARP to build up to the drop.</p>
+<p>The screen is black and white with big type, set like a tour poster, and the sound is drawn as an audio editor draws a track.</p>
+<div class="figs"><figure class="shot"><img src="img/screen-playing.png" alt="FM-1 Again playing: the bar count in big type, the tempo under it, the waveform of the last 16 bars, the four knobs&#x27; values along the bottom" loading="lazy"><figcaption>FM-1 Again playing</figcaption></figure></div>
+<div class="callout"><p>A work in progress: this is 1.0's first sketch. Pages and sounds may still change.</p></div>
+<hr>
+<nav class="contents" aria-label="Contents"><h2 id="contents">Contents</h2>
+<ol><li><a href="#s1">Install</a></li><li><a href="#s2">Start in a minute</a></li><li><a href="#s3">The screen</a></li><li><a href="#s4">The controls</a></li><li><a href="#s5">The pages</a></li><li><a href="#s6">Your own samples (CHOP)</a></li><li><a href="#s7">Saving</a></li><li><a href="#s8">MIDI and audio</a></li><li><a href="#s9">The screen reader</a></li><li><a href="#s10">Credits</a></li></ol>
+</nav>
+<hr>
+<h2 id="s1"><span class="num">1</span>Install</h2>
+<p>Install it with fm1-base's web installer (Chrome or Edge, the FM-1 plugged in over USB), or from a terminal:</p>
+<p>python3 base/tools/fm1_install.py again.fwsc</p>
+<p>The installer can put M-VAVE's own firmware back, or any other firmware. Installing is at your own risk.</p>
+<h2 id="s2"><span class="num">2</span>Start in a minute</h2>
+<ol><li>Press <strong>PLAY</strong>. A two-step garage groove plays at 124 BPM with chords on the keys' electric piano, ducking under the kick.</li><li>Play the keys. They play KEYS, and one key plays a whole minor-ninth chord.</li><li>Turn <strong>ALGORITHM</strong> to make the keys play VOX (sung syllables), CHOP (slices of a recording) or the DRUMS.</li><li>Press <strong>ARP</strong>. The build starts at the next bar: the snares roll faster, the sound thins out and a riser climbs. After four bars (or at the next bar, if you press ARP again) it drops.</li><li>Turn <strong>K1</strong> on HOME to set how hard it pumps, <strong>K2</strong> for the room and <strong>K3</strong> for a DJ filter.</li></ol>
+<h2 id="s3"><span class="num">3</span>The screen</h2>
+<ul><li><strong>The header.</strong> The big first line names the page. On HOME it names the groove while stopped, and shows the bar and beat while playing, "Drop in 3" during a build, and "Drop!" when the drop lands. The second line shows the page's choice; on HOME, the chord the groove plays now (Am9, Fmaj9 ...), or the key when CHORDS is off. For a moment after you turn something, it shows the value you just set instead. (The tempo is TEMPO, K4 on HOME.)</li><li><strong>The waveform.</strong> It shows the last 16 bars of the sound, left channel over right: the peaks in dark blue, the loudness (RMS) in lighter blue, each beat ticked along the edges and each bar's tick longer. The bar at its top names the groove, the tempo, the key and what the keys play on HOME (or a tip, until you have done what it says); on the other pages it shows the pages of that button as tabs, the one you are on inverted. On CHOP's page the panel shows your sample with its slices instead.</li><li><strong>The pads' strip.</strong> The black keys' tricks, the ones playing inverted.</li><li><strong>The bottom row.</strong> The four knobs K1 to K4 on this page, each with its name and value. The one you turn is lit.</li></ul>
+<h2 id="s4"><span class="num">4</span>The controls</h2>
+<div class="table" tabindex="0" role="region" aria-label="Table: The controls (Control, Does)"><table><thead><tr><th>Control</th><th>Does</th></tr></thead><tbody><tr><td>Keys</td><td>Play what ALGORITHM chose: KEYS, VOX, CHOP, RISE or DRUMS. With velocity. The white keys play the A minor scale when KEY is A</td></tr><tr><td>Black keys</td><td>Pads: a trick while held (below). SETUP › BLACK: NOTES makes them notes again</td></tr><tr><td>OCT- / OCT+</td><td>The keys' octave, -2 to +2</td></tr><tr><td>PLAY</td><td>Starts and stops the groove</td></tr><tr><td>ARP</td><td>BUILD, then DROP: the build starts at the next bar and lasts BUILD bars (SETUP). ARP again during the build: the drop at the next bar. When stopped, it starts the groove too</td></tr><tr><td>HOME, SEQ, EDIT, ENV, LFO, FX, GLO</td><td>The pages (below). The same button again: its next page (SEQ: GROOVE, RISE, BUILD; ENV: VOX, CHOP; FX: SPACE, ECHO; GLO: SETUP, TAPE, MIX, MIDI)</td></tr><tr><td>SELECT</td><td>Steps through the pages</td></tr><tr><td>ALGORITHM</td><td>What the keys play</td></tr><tr><td>PRESET</td><td>The page's main choice (shown in the header's second line)</td></tr><tr><td>K1-K4</td><td>The page's four values</td></tr><tr><td>SAVE</td><td>Saves everything (lit when something changed)</td></tr><tr><td>SEL</td><td>Tapped: says what the keys play. Held with a white key: a PERFORM trick (below)</td></tr><tr><td>REC</td><td>Looks for a Bluetooth MIDI device and connects to it. Hold it for a second to switch Bluetooth on or off</td></tr><tr><td>MASTER</td><td>The volume</td></tr></tbody></table></div>
+<h2 id="s5"><span class="num">5</span>The pages</h2>
+<div class="table" tabindex="0" role="region" aria-label="Table: The pages (Page (button), PRESET, K1, K2, K3, K4)"><table><thead><tr><th>Page (button)</th><th>PRESET</th><th>K1</th><th>K2</th><th>K3</th><th>K4</th></tr></thead><tbody><tr><td>HOME (HOME)</td><td>the groove</td><td>PUMP depth</td><td>SPACE (the room)</td><td>FILTER: left low-pass, right high-pass</td><td>TEMPO</td></tr><tr><td>GROOVE (SEQ)</td><td>the groove</td><td>SWING</td><td>VARY: hits left out, ghosts added</td><td>KICK</td><td>HATS</td></tr><tr><td>RISE (SEQ again)</td><td>AUTO</td><td>LENGTH: 1/16 .. a bar</td><td>BRIGHT</td><td>SUCK (the noise drawn in)</td><td>AUTO: OFF, DROP, every 8 or 4 bars</td></tr><tr><td>BUILD (SEQ a third time)</td><td>STYLE</td><td>BUILD: 2, 4 or 8 bars</td><td>STYLE: SNARE, KICK, STUTTER, MIX</td><td>RUSH: the tempo climbs to + N BPM at the drop</td><td>PLAY: LOOP or SONG</td></tr><tr><td>KEYS (EDIT)</td><td>ONE KEY: the chord one key plays</td><td>TONE</td><td>DECAY</td><td>CHORDS: the groove's progression</td><td>PLAYS: HOLD, STABS, PULSE</td></tr><tr><td>VOX (ENV)</td><td>VOWELS</td><td>VOWELS</td><td>GATE</td><td>SHIFT (the voice's size)</td><td>BREATH</td></tr><tr><td>CHOP (ENV again)</td><td>REVERSE: the slice in hand backwards</td><td>SLICE</td><td>LENGTH</td><td>PITCH</td><td>MODE</td></tr><tr><td>PUMP (LFO)</td><td>SOURCE</td><td>PUMP depth</td><td>TIME (the release)</td><td>SHAPE</td><td>SOURCE: KICK, BEAT, OFF</td></tr><tr><td>SPACE (FX)</td><td>SIZE</td><td>SIZE</td><td>DAMP</td><td>SPACE (its level)</td><td>SHINE (the shimmer)</td></tr><tr><td>ECHO (FX again)</td><td>MODE: TAPE, PING-PONG, REVERSE</td><td>TIME (in steps of the tempo)</td><td>AGAIN (the repeats)</td><td>WEAR</td><td>ECHO (its level)</td></tr><tr><td>SETUP (GLO)</td><td>SAVER: the screensaver ON or OFF</td><td>KEY</td><td>BLACK: PADS or NOTES</td><td>KEYS level</td><td>VOICE level (VOX and CHOP)</td></tr><tr><td>TAPE (GLO again)</td><td>the tape: CLEAN, WARM, CASSETTE, WORN, MEMORY</td><td>WOW</td><td>WARMTH (saturation)</td><td>DULL</td><td>HISS</td></tr><tr><td>MIX (GLO a third time)</td><td>PLAY</td><td>KICK</td><td>HATS</td><td>CLAP</td><td>RISE</td></tr><tr><td>MIDI (GLO a fourth time)</td><td>SYNC</td><td>SYNC: AUTO or INTERNAL</td><td>CLOCK OUT: OFF or ON</td><td>NOTES OUT: ON or OFF</td><td>CHANNEL: OMNI or 1-16</td></tr><tr><td>LINK (GLO a fifth time)</td><td>LINK</td><td>WI-FI: OFF, AUTO or AP</td><td>LINK: ON or OFF</td><td>TEMPO</td><td>NETMIDI: ON or OFF</td></tr></tbody></table></div>
+<p><strong>The grooves:</strong> HOUSE, 2-STEP, GARAGE 4X4, SHUFFLE, HALFTIME, BROKEN, MINIMAL, KICK ONLY. Each brings its own swing, and some of their hits come only half the time or every other bar, so a groove never repeats quite the same. VARY adds to that.</p>
+<p><strong>SONG</strong> (BUILD › PLAY): PLAY runs a whole song by itself, round and round: Intro (8 bars, the filter opening), Groove (8), Build (4), Drop (16), Break (8, no drums), Build (4), Drop (16), Outro (8, closing). HOME names the section and its bar. All the drums are synthesized: a kick, a clap, a ghost snare, closed and open hats, a shaker and a rim.</p>
+<p><strong>The chords (CHORDS):</strong> LONGING, NIGHT BUS, HOPE, FLOAT and FOG, four chords of two bars each, in the KEY you set (FOG rocks between two: the major and its relative minor, as C add9 and A minor 7 in A). OFF leaves the keys to you.</p>
+<p><strong>KEYS</strong> is a soft FM electric piano of my own: a bark that softens as the note rings, a short tine at the start, and a tremolo that pans.</p>
+<p><strong>VOX</strong> sings a short syllable on each key, gliding from one vowel to the next, scooped up into its pitch. Each key has its own syllable, so a run over the keys sounds like a voice cut into pieces.</p>
+<p><strong>RISE</strong> is a reversed stab, made forwards: its pitch climbs, it swells with a suck of noise, and it stops dead. On the keys it plays any note, and while the groove plays it ends exactly on a beat (a bar-long one on the bar). With AUTO on DROP, the groove fires one into every drop by itself.</p>
+<p><strong>ECHO's REVERSE</strong> plays what you just played backwards, one TIME later: each note's fade becomes a swell into the next beat.</p>
+<p><strong>PUMP</strong> is the sidechain: everything except the kick and the hats ducks under each kick (or each beat) and swells back up.</p>
+<p><strong>SPACE</strong> is a long, smooth reverb, <strong>ECHO</strong> a tape echo, and <strong>TAPE</strong> runs the whole mix through a worn tape (wow, warmth, a duller top and hiss). All three come from my firmware Arctic Scream, which took them from Felucca and GR!MM.</p>
+<h3 id="perform-tricks-on-the-black-keys-and-the-white">PERFORM: tricks on the black keys and the white</h3>
+<p>Hold a <strong>black key</strong>: its trick plays while you hold it, and the strip above the knobs shows it lit. From F#3 up: ROLL 1/8 (R8), 1/16, 1/32, REVERSE, TAPE STOP, GATE, FILTER (low sweep), ECHO THROW, SPACE THROW, KICK OUT, DRUMS OUT.</p>
+<p>Or hold <strong>SEL</strong> and hold a white key, for any trick (several at once). Let go and it's gone.</p>
+<div class="table" tabindex="0" role="region" aria-label="Table: PERFORM: tricks on the black keys and the white (White key, Trick)"><table><thead><tr><th>White key</th><th>Trick</th></tr></thead><tbody><tr><td>F3</td><td>STUTTER 1/16: the last sixteenth, round and round</td></tr><tr><td>G3</td><td>STUTTER 1/8</td></tr><tr><td>A3</td><td>STUTTER 1/4</td></tr><tr><td>B3</td><td>REVERSE: the last beat backwards</td></tr><tr><td>C4</td><td>TAPE STOP: everything slows to a stop</td></tr><tr><td>D4</td><td>LOW SWEEP: a low-pass closes over two seconds</td></tr><tr><td>E4</td><td>HIGH SWEEP: a high-pass opens over two seconds</td></tr><tr><td>F4</td><td>ECHO THROW: the keys and voices sent full into ECHO</td></tr><tr><td>G4</td><td>SPACE THROW: the same into SPACE</td></tr><tr><td>A4</td><td>KICK OUT: the breakdown</td></tr><tr><td>B4</td><td>DRUMS OUT: every drum gone</td></tr><tr><td>C5</td><td>STUTTER 1/32</td></tr><tr><td>D5</td><td>GATE: the sound cut to sixteenths</td></tr></tbody></table></div>
+<p>The idea comes from Arctic Scream's FX performance layer; the pads on the black keys, the strip, the tabs, the beat ticks, SONG, the builds' styles and RUSH, the step conditions and the tips come from loaf-breaker by FLEXOR (ideas only, written anew here).</p>
+<h2 id="s6"><span class="num">6</span>Your own samples (CHOP)</h2>
+<p>CHOP plays one recording, up to 8 seconds, cut into slices. In SLICES mode each key plays a slice; in PITCHED mode one slice (SLICE) plays across the keys in pitch, as recorded at middle C. A slice plays while you hold its key, up to LENGTH of it.</p>
+<p><strong>REVERSE</strong> turns a slice around: play it, then turn PRESET on CHOP's page (in PITCHED mode, the slice SLICE chooses). It then plays from its end back to its start, swelling into its attack and stopping there. The panel marks it with "&lt;" before its number. Each slice has its own; a new sample starts with none.</p>
+<p>It comes with a short phrase sung by VOX. To use your own recording (a voice, a street, a room), plug in the FM-1 and run:</p>
+<p>/usr/bin/python3 app/tools/again_chop.py my-voice.wav --send</p>
+<p>The tool finds where the sound starts again and cuts it there, or into even slices with <code>--even 16</code>. The FM-1 keeps the sample through restarts and updates. It keeps one copy: if the power goes while a sample is being sent, CHOP plays the factory phrase until you send it again. To go back to the factory phrase:</p>
+<p>python3 base/tools/fm1_companion.py rm chop</p>
+<h3 id="the-screensaver">The screensaver</h3>
+<p>After a minute untouched, the screen plays a short film of a crowd at a concert, dithered black and white, round and round, while the music plays on. The first touch only wakes the screen; it plays nothing. SETUP's PRESET turns it off. The film comes from the USB002 tour's creative files, which its team shared with the community.</p>
+<h2 id="s7"><span class="num">7</span>Saving</h2>
+<p>SAVE stores every value, the page, the octave and what the keys play. They come back at the next power-on, and they stay through updates: a new version gives what it adds its default and keeps the rest.</p>
+<h2 id="s8"><span class="num">8</span>MIDI and audio</h2>
+<p>The keys go out over USB-MIDI and Bluetooth MIDI on channel 1, and notes coming in on any channel play whatever the keys play. Over USB the FM-1 is also an audio interface: a computer can record it and play through it.</p>
+<p><strong>MIDI clock.</strong> With SYNC on AUTO (the default), a MIDI clock that comes in (from a computer over USB, the TRS jack or Bluetooth) leads: FM-1 Again plays at its tempo, held on its beat, and START, CONTINUE and STOP start and stop the groove. When the clock stops coming, your own TEMPO is back. INTERNAL ignores it. CLOCK OUT sends FM-1 Again's own tempo as a clock to the computer over USB, with START and STOP, while no clock leads.</p>
+<p><strong>NOTES OUT</strong> (on by default) sends what the groove plays as MIDI notes, over USB and Bluetooth: the drums on channel 10 (General MIDI drum notes), the chords on channel 4, RISE on channel 5; the keys stay on channel 1. STOP sends all notes off on those channels. Turn it off when the FM-1 is only a controller.</p>
+<p><strong>MIDI in.</strong> Besides notes: pitch bend (two semitones up and down) and the mod wheel (a vibrato) bend KEYS, VOX and CHOP; a sustain pedal (CC 64) holds what you play until it lets go; CC 7 is the volume; CC 120 and 123 let every note go. CHANNEL takes MIDI in from one channel only (OMNI: every channel) and sends the keys on it (OMNI: channel 1).</p>
+<p><strong>Ableton Link over Wi-Fi</strong> (the LINK page). FM-1 Again plays in time with Link apps on a phone, a tablet or a computer (Ableton Note, Live and the many apps with Link), on the same network:</p>
+<ul><li><strong>WI-FI AP:</strong> the FM-1 makes its own network. The page shows its name and password by turns; join it from the phone, and the title bar counts who joined. The simplest way, anywhere.</li><li><strong>WI-FI AUTO:</strong> the FM-1 joins a network it knows. Give it one over USB, once: <code>python3 base/tools/fm1_remote.py wifi join "NETWORK" PASSWORD</code>. The title bar shows its address.</li><li><strong>LINK ON:</strong> the page counts the peers in the session. With one or more (and no MIDI clock coming in, which leads first), the session leads: its tempo is FM-1 Again's, the groove is held on its beat, and starting or stopping in any app starts or stops the groove (starting, it waits for the next bar line). Turning TEMPO or pressing PLAY on the FM-1 does the same to the session. Alone, the FM-1 gives the session its tempo.</li></ul>
+<p>Link shares the tempo, the beat and start / stop, not sound or notes: each plays its own. (In Ableton Note: Link and Start Stop Sync are in its settings, the wheel at the top right.)</p>
+<p><strong>The notes to a phone: Bluetooth or Wi-Fi.</strong> Link carries no notes; MIDI does, two ways, and you may use either or both. What the keys play goes out (and the groove's notes with NOTES OUT on), and notes that come in play FM-1 Again.</p>
+<ul><li><strong>Bluetooth MIDI:</strong> in the app, connect to <strong>FM-1 XXXX</strong> (in Ableton Note: the wheel at the top right, Link &amp; MIDI › Input › Connect to Bluetooth, then its switch on). If notes stop arriving while the app still says Connected, tap the FM-1 in that list again to connect anew.</li><li><strong>NETMIDI</strong> (on by default, MIDI over Wi-Fi): with the FM-1 and the phone on the same network (WI-FI AP is simplest), the FM-1 finds the phone's network MIDI session by itself and joins it; the page then says MIDI. In Ableton Note it is "Network Session 1" under Input. A computer can add the FM-1 to its network session too (192.168.4.1, port 5004, in WI-FI AP).</li></ul>
+<p>In Ableton Note the notes play the track whose instrument is open (its knobs and pads on the screen), not the Set's overview. Note and GarageBand take MIDI in but send none out, so they cannot play the FM-1; an app with MIDI out can.</p>
+<h2 id="s9"><span class="num">9</span>The screen reader</h2>
+<p>FM-1 Again speaks to fm1-reader, as every fm1-base firmware does: each page, value and message is said as it changes, and a page is read whole when the reader starts listening.</p>
+<h2 id="s10"><span class="num">10</span>Credits</h2>
+<p>FM-1 Again by PolarPatch is built on fm1-base (Charles Vestal) and felucca-bsp, from Felucca by Leo Kuroshita (Hügelton Instruments). Its SPACE, ECHO and TAPE come from Arctic Scream, which took them from Felucca and GR!MM. The look follows the posters of the USB002 tour, from the creative files its team shared with the community. FM-1 Again is not made, endorsed or approved by any artist. See LICENSING.md for every part and its licence.</p>
+</main>
+</div>
+</body>
+</html>

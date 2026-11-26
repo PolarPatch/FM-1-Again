@@ -212,7 +212,7 @@ static void lk_where(char *t)
     }
 }
 
-/* ---- MIDI over Wi-Fi (RTP-MIDI, Apple's "Network Session"): WI-FI MIDI on the page. The FM-1 looks for a session on
+/* ---- MIDI over Wi-Fi (RTP-MIDI, Apple's "Network Session"): NETMIDI on the page. The FM-1 looks for a session on
  * its network (an mDNS question for _apple-midi._udp, sent from its own port so the answer comes back to it: no group
  * joined, Link keeps its own) and invites the first it finds: a phone's (iOS: an app's Network Session on), a
  * computer's (macOS: Audio MIDI Setup's network session). A computer may invite it too (192.168.4.1 or its address,

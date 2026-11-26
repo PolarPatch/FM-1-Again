@@ -143,7 +143,7 @@ static const param_t PA[NPA] = {
     [PA_MIDICH] = {"CHANNEL", 16, 0, FMT_LIST, MIDICH_NAME},   /* in: OMNI or one; out: the keys' (OMNI: 1) */
     [PA_WIFI] = {"WI-FI", 2, 0, FMT_LIST, WIFI_NAME},     /* AUTO: the networks kept; AP: the FM-1 is the network */
     [PA_LINK] = {"LINK", 1, 1, FMT_LIST, ONOFF_NAME},     /* Ableton Link whenever there is a network */
-    [PA_NETMIDI] = {"WI-FI MIDI", 1, 1, FMT_LIST, ONOFF_NAME},   /* RTP-MIDI: a phone's or a computer's network session */
+    [PA_NETMIDI] = {"NETMIDI", 1, 1, FMT_LIST, ONOFF_NAME},   /* RTP-MIDI: a phone's or a computer's network session */
 };
 
 /* what the keys play (ALGORITHM) */

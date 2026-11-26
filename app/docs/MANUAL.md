@@ -96,7 +96,7 @@ The installer can put M-VAVE's own firmware back, or any other firmware. Install
 | TAPE (GLO again) | the tape: CLEAN, WARM, CASSETTE, WORN, MEMORY | WOW | WARMTH (saturation) | DULL | HISS |
 | MIX (GLO a third time) | PLAY | KICK | HATS | CLAP | RISE |
 | MIDI (GLO a fourth time) | SYNC | SYNC: AUTO or INTERNAL | CLOCK OUT: OFF or ON | NOTES OUT: ON or OFF | CHANNEL: OMNI or 1-16 |
-| LINK (GLO a fifth time) | LINK | WI-FI: OFF, AUTO or AP | LINK: ON or OFF | TEMPO | SYNC |
+| LINK (GLO a fifth time) | LINK | WI-FI: OFF, AUTO or AP | LINK: ON or OFF | TEMPO | WI-FI MIDI: ON or OFF |
 
 **The grooves:** HOUSE, 2-STEP, GARAGE 4X4, SHUFFLE, HALFTIME, BROKEN, MINIMAL, KICK ONLY. Each brings its own swing,
 and some of their hits come only half the time or every other bar, so a groove never repeats quite the same. VARY
@@ -222,6 +222,20 @@ computer (Ableton Note, Live and the many apps with Link), on the same network:
 
 Link shares the tempo, the beat and start / stop, not sound or notes: each plays its own. (In Ableton Note: Link and
 Start Stop Sync are in its settings, the wheel at the top right.)
+
+**The notes to a phone: Bluetooth or Wi-Fi.** Link carries no notes; MIDI does, two ways, and you may use either or
+both. What the keys play goes out (and the groove's notes with NOTES OUT on), and notes that come in play FM-1 Again.
+
+- **Bluetooth MIDI:** in the app, connect to **FM-1 XXXX** (in Ableton Note: the wheel at the top right, Link & MIDI ›
+  Input › Connect to Bluetooth, then its switch on). If notes stop arriving while the app still says Connected, tap
+  the FM-1 in that list again to connect anew.
+- **WI-FI MIDI** (on by default): with the FM-1 and the phone on the same network (WI-FI AP is simplest), the FM-1
+  finds the phone's network MIDI session by itself and joins it; the page then says MIDI. In Ableton Note it is
+  "Network Session 1" under Input. A computer can add the FM-1 to its network session too (192.168.4.1, port 5004,
+  in WI-FI AP).
+
+In Ableton Note the notes play the track whose instrument is open (its knobs and pads on the screen), not the Set's
+overview. Note and GarageBand take MIDI in but send none out, so they cannot play the FM-1; an app with MIDI out can.
 
 ## 9. The screen reader
 

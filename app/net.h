@@ -23,8 +23,10 @@ static void net_apply(void)
 {
     static const uint8_t MODE[3] = {WIFI_MODE_OFF, WIFI_MODE_AUTO, WIFI_MODE_AP};
     int m = MODE[set.p[PA_WIFI] % 3u];
-    if (plat_wifi_get_mode() != m)
+    if (plat_wifi_get_mode() != m) {
+        plat_link_enable(0);                     /* (Link opens its port and joins its group again on the new mode) */
         plat_wifi_mode(m);
+    }
     plat_link_enable(set.p[PA_LINK] != 0u);
 }
 
@@ -143,7 +145,8 @@ static void lk_frame(void)
     }
 }
 
-/* the page's second line: how far the Wi-Fi got, the session; in MODE AP the network's name and its password by turns */
+/* the page's second line: how far the Wi-Fi got, the session; in MODE AP the network's name, its password and the
+ * session by turns */
 static void lk_status(char *t)
 {
     static const char *const ST[] = {"Wi-Fi off", "Starting", "No network", "Joining", "Address", "Connected",
@@ -156,10 +159,17 @@ static void lk_status(char *t)
         plat_wifi_ap_name(nm);
         if (plat_wifi_ap_state() != WIFI_AP_UP)
             text_cat(t, plat_wifi_ap_state() == WIFI_AP_FAILED ? "AP failed" : "AP starting");
-        else if (plat_ms() / 3000u & 1u && plat_wifi_ap_default_key(key) && key[0])
-            text_cat(t, key);
-        else
-            text_cat(t, nm);
+        else {
+            uint32_t k = plat_ms() / 2000u % 3u;  /* its name, its password, the session: by turns */
+            if (k == 1u && plat_wifi_ap_default_key(key) && key[0])
+                text_cat(t, key);
+            else if (k == 2u && plat_link_on()) {
+                int_text((int32_t)plat_link_peers(), n);
+                text_cat(t, n);
+                text_cat(t, plat_link_peers() == 1u ? " peer" : " peers");
+            } else
+                text_cat(t, nm);
+        }
         return;
     }
     if (plat_wifi_state() != WIFI_CONNECTED) {
